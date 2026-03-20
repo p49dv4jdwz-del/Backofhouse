@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Back of House — Hospitality Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0d0d0d;--dark:#141414;--card:#1a1a1a;--border:#2a2a2a;--cream:#f0ebe3;--gold:#c9a84c;--gold-light:#e4c778;--white:#ffffff;--muted:#888;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--serif);font-size:18px;color:var(--white);text-decoration:none}
+.nav-cta{background:var(--gold);color:var(--black);padding:10px 22px;border-radius:2px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:130px 28px 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.55) 50%,rgba(0,0,0,0.2) 100%);z-index:1}
+.hero-content{position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:28px;width:fit-content}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-family:var(--serif);font-size:clamp(36px,8vw,62px);font-weight:400;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;max-width:700px}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:16px;line-height:1.7;color:rgba(255,255,255,0.75);max-width:500px;margin-bottom:36px;font-weight:300}
+.btn-primary{background:var(--gold);color:var(--black);padding:16px 32px;border-radius:2px;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:10px}
+.btn-secondary{color:rgba(255,255,255,0.6);font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;margin-top:14px}
+.hero-stats{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.15);flex-wrap:wrap}
+.stat-item{display:flex;flex-direction:column;gap:4px}
+.stat-num{font-family:var(--serif);font-size:26px;color:var(--gold);font-weight:600}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em}
+section{padding:80px 28px}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);font-weight:500;margin-bottom:16px}
+.section-title{font-family:var(--serif);font-size:clamp(26px,6vw,44px);font-weight:400;line-height:1.15;letter-spacing:-0.02em;margin-bottom:18px}
+.section-body{font-size:15px;line-height:1.75;color:rgba(255,255,255,0.6);max-width:540px;font-weight:300}
+.slider-section{background:var(--dark);padding:60px 0}
+.slider-label{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);font-weight:500;margin-bottom:12px;padding:0 28px}
+.slider-title{font-family:var(--serif);font-size:clamp(24px,5vw,38px);font-weight:400;line-height:1.2;margin-bottom:32px;padding:0 28px}
+.slider-title em{font-style:italic;color:var(--gold)}
+.slider-wrap{overflow:hidden}
+.slider-track{display:flex;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)}
+.slide{flex-shrink:0;width:80vw;max-width:320px;margin-right:14px;border-radius:8px;overflow:hidden;position:relative}
+.slide:first-child{margin-left:28px}
+.slide img{width:100%;height:220px;object-fit:cover;display:block}
+.slide-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);padding:20px 14px 12px;font-size:12px;font-weight:500;color:var(--white)}
+.slider-nav{display:flex;gap:10px;padding:16px 28px 0}
+.slider-btn{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--white);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.slider-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--black)}
+.slider-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.slider-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all 0.3s;cursor:pointer}
+.slider-dot.active{background:var(--gold);width:20px;border-radius:3px}
+.results-section{background:var(--black)}
+.stat-counters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.counter-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center}
+.counter-num{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold);line-height:1}
+.counter-suffix{font-size:11px;color:var(--gold);margin-top:2px}
+.counter-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+.counter-change{font-size:11px;color:#4caf7d;margin-top:5px}
+.charts-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:20px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px}
+.chart-title{font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:3px}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:16px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:110px}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:3px 3px 0 0;position:relative;transition:height 1.5s cubic-bezier(0.25,0.46,0.45,0.94)}
+.bar-before{background:rgba(255,255,255,0.12)}
+.bar-after{background:var(--gold)}
+.bar-val{font-size:9px;font-weight:600;position:absolute;top:-16px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.bar-label{font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:0.04em}
+.line-chart{position:relative;height:90px;margin-top:4px}
+.line-chart svg{width:100%;height:100%}
+.metric-row{margin-bottom:12px}
+.metric-row:last-child{margin-bottom:0}
+.metric-labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:rgba(255,255,255,0.7)}
+.metric-labels span:last-child{color:var(--gold);font-weight:500}
+.metric-track{background:var(--border);border-radius:100px;height:5px;overflow:hidden}
+.metric-fill{height:100%;background:var(--gold);border-radius:100px;width:0%;transition:width 1.5s ease}
+.charts-phone{width:100%;border-radius:12px;margin-top:24px;display:block}
+.pain-section{background:var(--cream);color:var(--black);padding:80px 28px}
+.pain-section .section-label{color:#8b6914}
+.pain-section .section-title{color:var(--black)}
+.pain-section .section-body{color:rgba(0,0,0,0.6)}
+.pain-grid{display:grid;grid-template-columns:1fr;gap:2px;margin-top:40px}
+.pain-item{background:rgba(0,0,0,0.04);padding:22px 20px;border-left:3px solid transparent;transition:border-color 0.2s}
+.pain-item:hover{border-left-color:#c9a84c}
+.pain-item h3{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--black);margin-bottom:7px}
+.pain-item p{font-size:13px;color:rgba(0,0,0,0.55);line-height:1.6}
+.services-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:40px}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.25s,transform 0.25s}
+.service-card:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-2px)}
+.service-img{width:100%;height:180px;object-fit:cover;display:block}
+.service-body{padding:18px}
+.service-card h3{font-family:var(--serif);font-size:19px;font-weight:600;margin-bottom:8px}
+.service-card p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;font-weight:300}
+.learn-more{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:var(--gold);text-decoration:none;font-weight:500}
+.process-section{background:var(--dark)}
+.steps{margin-top:40px;display:flex;flex-direction:column}
+.step{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step-num{font-family:var(--serif);font-size:32px;color:var(--border);font-weight:600;min-width:42px;line-height:1;padding-top:4px}
+.step-content h3{font-family:var(--serif);font-size:19px;font-weight:600;margin-bottom:7px}
+.step-content p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;font-weight:300}
+.pricing-grid{display:flex;flex-direction:column;gap:14px;margin-top:40px}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;position:relative}
+.price-card.featured{border-color:var(--gold);background:linear-gradient(135deg,#1e1a12,#1a1a1a)}
+.featured-badge{position:absolute;top:-12px;left:24px;background:var(--gold);color:var(--black);font-size:11px;font-weight:600;padding:4px 12px;letter-spacing:0.08em;text-transform:uppercase}
+.price-tier{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);margin-bottom:6px}
+.price-amount{font-family:var(--serif);font-size:34px;font-weight:600;color:var(--white);line-height:1;margin-bottom:4px}
+.price-period{font-size:13px;color:var(--muted);margin-bottom:18px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.price-features li{font-size:13px;color:rgba(255,255,255,0.65);display:flex;align-items:flex-start;gap:9px;line-height:1.5}
+.price-features li::before{content:'checkmark';color:var(--gold);font-size:12px;margin-top:1px;flex-shrink:0}
+.btn-outline{display:block;text-align:center;border:1px solid var(--border);color:var(--white);padding:12px 24px;border-radius:4px;font-size:14px;font-weight:500;text-decoration:none}
+.price-card.featured .btn-outline{background:var(--gold);border-color:var(--gold);color:var(--black)}
+.testimonial-section{background:var(--cream);color:var(--black)}
+.testimonial-section .section-label{color:#8b6914}
+.testimonial-quote{font-family:var(--serif);font-size:clamp(20px,5vw,32px);font-weight:400;line-height:1.4;color:var(--black);margin:28px 0;font-style:italic}
+.testimonial-author{font-size:13px;color:rgba(0,0,0,0.5);font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
+.results-row{display:flex;gap:24px;margin-top:40px;padding-top:32px;border-top:1px solid rgba(0,0,0,0.1);flex-wrap:wrap}
+.result-item{display:flex;flex-direction:column;gap:4px}
+.result-num{font-family:var(--serif);font-size:30px;font-weight:600;color:#8b6914}
+.result-label{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:rgba(0,0,0,0.45)}
+.about-section{background:#111;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.about-inner{display:flex;flex-direction:column;gap:24px}
+.about-photo{width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid var(--gold)}
+.about-text{font-family:var(--serif);font-size:clamp(19px,4.5vw,28px);font-weight:400;line-height:1.5;color:rgba(255,255,255,0.85);max-width:640px;margin-bottom:14px}
+.about-body{font-size:14px;color:rgba(255,255,255,0.45);max-width:500px;line-height:1.75;font-weight:300}
+.cta-section{background:var(--dark);text-align:center;padding:80px 28px}
+.cta-section .section-title{max-width:520px;margin:0 auto 18px}
+.cta-section .section-body{max-width:380px;margin:0 auto 36px;text-align:center}
+.booking-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px 24px;max-width:460px;margin:0 auto;text-align:left}
+.booking-card h3{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:7px}
+.booking-card>p{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:24px;font-weight:300;line-height:1.6}
+.form-group{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.form-group input,.form-group select{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:4px;padding:13px 14px;color:var(--white);font-family:var(--sans);font-size:14px;outline:none;-webkit-appearance:none}
+.form-group input::placeholder{color:rgba(255,255,255,0.25)}
+.form-group select{color:rgba(255,255,255,0.4)}
+.form-group select option{background:#1a1a1a;color:#fff}
+.form-submit{width:100%;background:var(--gold);color:var(--black);border:none;padding:15px;border-radius:4px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.form-note{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:12px;font-weight:300}
+.success-message{display:none;text-align:center;padding:28px}
+.success-message h3{font-family:var(--serif);font-size:22px;color:var(--gold);margin-bottom:10px}
+.success-message p{font-size:13px;color:rgba(255,255,255,0.5)}
+footer{background:var(--black);border-top:1px solid var(--border);padding:44px 28px;text-align:center}
+.footer-tagline{font-size:13px;color:var(--muted);margin-bottom:24px;font-weight:300}
+.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.footer-links a{font-size:11px;color:rgba(255,255,255,0.25);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase}
+.footer-copy{font-size:11px;color:rgba(255,255,255,0.15)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="nav-logo">The Back of House</a>
+  <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="nav-cta">Book Free Call</a>
+</nav>
+<section class="hero">
+  <div class="hero-bg" style="background-image:url('https://i.ibb.co/0yNbwpsX/IMG-1947.jpg')"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Built for Hospitality</div>
+    <h1>Your digital<br><em>back of house.</em><br>Running 24/7.</h1>
+    <p class="hero-sub">We plug AI automation, lead generation, and content systems into your restaurant, cafe, or venue so you get a steady flow of customers without touching a screen.</p>
+    <div>
+      <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="btn-primary">Book Your Free Strategy Call</a><br>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">20-50</span><span class="stat-label">New customers/month</span></div>
+      <div class="stat-item"><span class="stat-num">72hrs</span><span class="stat-label">To first leads</span></div>
+      <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Hours of your time</span></div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+<section class="slider-section fade-up">
+  <div class="slider-label">The World We Work In</div>
+  <h2 class="slider-title">We know<br><em>your industry.</em></h2>
+  <div class="slider-wrap">
+    <div class="slider-track" id="sliderTrack">
+      <div class="slide"><img src="https://i.ibb.co/dJ1XzTrT/IMG-1953.jpg" alt="Kitchen"><div class="slide-caption">Busy kitchens need smart systems</div></div>
+      <div class="slide"><img src="https://i.ibb.co/YFSJwqZD/IMG-1952.webp" alt="Open kitchen"><div class="slide-caption">The pressure of service is real</div></div>
+      <div class="slide"><img src="https://i.ibb.co/kVc0cZgb/IMG-1950.jpg" alt="Rooftop bar"><div class="slide-caption">Full venues every night. That is the goal.</div></div>
+      <div class="slide"><img src="https://i.ibb.co/v6qfgPKz/I-want-pic-of-live-high-end-restaurant.jpg" alt="Fine dining"><div class="slide-caption">Premium venues deserve premium marketing</div></div>
+      <div class="slide"><img src="https://i.ibb.co/k2W3zkJL/IMG-1948.jpg" alt="Luxury restaurant"><div class="slide-caption">Every seat filled. Every night.</div></div>
+      <div class="slide"><img src="https://i.ibb.co/W4xDj54S/IMG-1949.jpg" alt="Chef at work"><div class="slide-caption">Built by someone who knows this world</div></div>
+      <div class="slide"><img src="https://i.ibb.co/0VZ3Grgd/IMG-0101.jpg" alt="Plated dish"><div class="slide-caption">Great food deserves to be discovered</div></div>
+    </div>
+  </div>
+  <div class="slider-nav">
+    <button class="slider-btn" onclick="slideNav(-1)">&#8592;</button>
+    <button class="slider-btn" onclick="slideNav(1)">&#8594;</button>
+  </div>
+  <div class="slider-dots" id="sliderDots"></div>
+</section>
+<div class="divider"></div>
+<section class="results-section fade-up">
+  <div class="section-label">Proven Results</div>
+  <h2 class="section-title">Real numbers.<br><em>Real growth.</em></h2>
+  <p class="section-body">Average results across our clients in the first 90 days.</p>
+  <div class="stat-counters" id="counters">
+    <div class="counter-card"><div class="counter-num" data-target="340">0</div><div class="counter-suffix">% more enquiries</div><div class="counter-label">After 30 Days</div><div class="counter-change">avg client result</div></div>
+    <div class="counter-card"><div class="counter-num" data-target="6200">0</div><div class="counter-suffix">pounds per month added</div><div class="counter-label">Revenue Growth</div><div class="counter-change">avg month 2</div></div>
+    <div class="counter-card"><div class="counter-num" data-target="47">0</div><div class="counter-suffix">new customers</div><div class="counter-label">Per Month Avg</div><div class="counter-change">vs 8 before</div></div>
+    <div class="counter-card"><div class="counter-num" data-target="14">0</div><div class="counter-suffix">days</div><div class="counter-label">To First Results</div><div class="counter-change">guaranteed</div></div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Monthly New Customers</div>
+      <div class="chart-sub">Before vs After - avg across clients</div>
+      <div class="bar-chart" id="barChart">
+        <div class="bar-group"><div class="bar bar-before" style="height:14%"><span class="bar-val" style="color:var(--muted)">8</span></div><div class="bar bar-after" style="height:0%" data-h="68"><span class="bar-val" style="color:var(--gold)">34</span></div><div class="bar-label">Mo 1</div></div>
+        <div class="bar-group"><div class="bar bar-before" style="height:14%"><span class="bar-val" style="color:var(--muted)">8</span></div><div class="bar bar-after" style="height:0%" data-h="82"><span class="bar-val" style="color:var(--gold)">41</span></div><div class="bar-label">Mo 2</div></div>
+        <div class="bar-group"><div class="bar bar-before" style="height:14%"><span class="bar-val" style="color:var(--muted)">8</span></div><div class="bar bar-after" style="height:0%" data-h="92"><span class="bar-val" style="color:var(--gold)">46</span></div><div class="bar-label">Mo 3</div></div>
+        <div class="bar-group"><div class="bar bar-before" style="height:14%"><span class="bar-val" style="color:var(--muted)">8</span></div><div class="bar bar-after" style="height:0%" data-h="100"><span class="bar-val" style="color:var(--gold)">50+</span></div><div class="bar-label">Mo 4</div></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.12)"></div>Before</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--gold)"></div>After</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Instagram Reach Growth</div>
+      <div class="chart-sub">Weekly reach over 12 weeks - avg client</div>
+      <div class="line-chart">
+        <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c9a84c" stop-opacity="0.25"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/></linearGradient></defs>
+          <path class="line-fill" d="M0,85 L27,80 L55,72 L82,62 L110,50 L137,38 L165,26 L192,17 L220,10 L247,6 L275,3 L300,2 L300,90 L0,90 Z" fill="url(#lg)" style="opacity:0;transition:opacity 1.2s ease 0.3s"/>
+          <path class="line-path" d="M0,85 L27,80 L55,72 L82,62 L110,50 L137,38 L165,26 L192,17 L220,10 L247,6 L275,3 L300,2" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:700;stroke-dashoffset:700;transition:stroke-dashoffset 2s ease"/>
+          <circle cx="300" cy="2" r="4" fill="#c9a84c"/>
+        </svg>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px"><span>Week 1</span><span>Week 4</span><span>Week 8</span><span>Week 12</span></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Online Presence - Before vs After</div>
+      <div class="chart-sub">Avg improvement across key metrics</div>
+      <div style="margin-top:12px">
+        <div class="metric-row"><div class="metric-labels"><span>Google Business</span><span>2/10 to 9/10</span></div><div class="metric-track"><div class="metric-fill" data-w="90%"></div></div></div>
+        <div class="metric-row"><div class="metric-labels"><span>Instagram Engagement</span><span>1% to 8%</span></div><div class="metric-track"><div class="metric-fill" data-w="80%"></div></div></div>
+        <div class="metric-row"><div class="metric-labels"><span>Lead Conversion</span><span>5% to 34%</span></div><div class="metric-track"><div class="metric-fill" data-w="68%"></div></div></div>
+        <div class="metric-row"><div class="metric-labels"><span>Booking Rate</span><span>12% to 61%</span></div><div class="metric-track"><div class="metric-fill" data-w="61%"></div></div></div>
+      </div>
+    </div>
+  </div>
+  <img src="https://i.ibb.co/wh6wRC4t/Need-some-pictures-for-my-business-app-it-s-about-ai-automation-for-restaurants.jpg" alt="Results dashboard" class="charts-phone">
+</section>
+<div class="divider"></div>
+<section class="pain-section fade-up">
+  <div class="section-label">The Problem</div>
+  <h2 class="section-title">Your food is five-star.<br>Your online presence is not.</h2>
+  <p class="section-body">You are brilliant in the kitchen. But most hospitality businesses are losing customers every week because their digital presence is invisible, inconsistent, or non-existent.</p>
+  <div class="pain-grid">
+    <div class="pain-item"><h3>You are invisible online</h3><p>Competitors with worse food show up first. Customers who want you cannot find you so they go elsewhere.</p></div>
+    <div class="pain-item"><h3>Leads go cold with no follow-up</h3><p>Someone messages your page or visits your site. Then nothing. No response, no system, no customer.</p></div>
+    <div class="pain-item"><h3>No time to do it yourself</h3><p>Service, prep, staff, suppliers. When exactly are you supposed to post Reels and manage email campaigns?</p></div>
+    <div class="pain-item"><h3>Agencies do not understand hospitality</h3><p>Generic marketing does not work for restaurants. Cover nights, table turns, peak times. Most agencies have no clue.</p></div>
+  </div>
+</section>
+<div class="divider"></div>
+<section style="background:var(--black)" class="fade-up">
+  <div class="section-label">What We Do</div>
+  <h2 class="section-title">The complete growth<br>machine for your venue.</h2>
+  <p class="section-body">Five systems working together. Lead generation, automation, content, branding, and connections. All managed for you.</p>
+  <div class="services-grid">
+    <div class="service-card"><img class="service-img" src="https://i.ibb.co/B5V7mG2S/IMG-1954.jpg" alt="Lead Generation"><div class="service-body"><h3>Lead Generation</h3><p>Landing pages, irresistible offers, and paid ads on Facebook and Instagram that pull in hungry customers not just followers.</p><a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="learn-more">Learn more</a></div></div>
+    <div class="service-card"><img class="service-img" src="https://i.ibb.co/wh6wRC4t/Need-some-pictures-for-my-business-app-it-s-about-ai-automation-for-restaurants.jpg" alt="AI Automation"><div class="service-body"><h3>AI Automation</h3><p>Every lead gets an instant reply. Every enquiry gets followed up. Booking confirmations, review requests, win-back emails all automated.</p><a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="learn-more">Learn more</a></div></div>
+    <div class="service-card"><img class="service-img" src="https://i.ibb.co/XrLLLr84/IMG-1957.jpg" alt="Content Engine"><div class="service-body"><h3>Content Engine</h3><p>Reels, TikToks, and posts that show the real story behind your kitchen. Built to create attention, drive bookings, and build loyalty.</p><a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="learn-more">Learn more</a></div></div>
+    <div class="service-card"><img class="service-img" src="https://i.ibb.co/ZRsP56CQ/IMG-1959.jpg" alt="Branding"><div class="service-body"><h3>Branding and Positioning</h3><p>Your brand cleaned up, sharpened, and made to stand out. Logo, tone, social presence. Everything cohesive and premium.</p><a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="learn-more">Learn more</a></div></div>
+    <div class="service-card"><img class="service-img" src="https://i.ibb.co/nNjxs6Jp/IMG-1960.webp" alt="Connections"><div class="service-body"><h3>Supplier and Business Connections</h3><p>We tap into our hospitality network to connect you with the right suppliers, collaborators, and local opportunities.</p><a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="learn-more">Learn more</a></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+<section class="process-section fade-up" id="how">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">From first call to<br>customers in the door.</h2>
+  <div class="steps">
+    <div class="step"><span class="step-num">01</span><div class="step-content"><h3>Free Strategy Call</h3><p>We audit your current digital presence, understand your goals, and map out exactly what your venue needs. No pitch, no pressure. Just clarity.</p></div></div>
+    <div class="step"><span class="step-num">02</span><div class="step-content"><h3>We Build Your System</h3><p>Landing page, offer, CRM, automation flows. Your digital back of house gets built in days not months.</p></div></div>
+    <div class="step"><span class="step-num">03</span><div class="step-content"><h3>Launch and Generate Leads</h3><p>Ads go live. Content starts rolling. Leads start coming in and the automation converts them while you focus on service.</p></div></div>
+    <div class="step"><span class="step-num">04</span><div class="step-content"><h3>Optimise and Scale</h3><p>We track what is working, cut what is not, and scale up. Every month should be better than the last.</p></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+<section style="background:var(--black)" class="fade-up">
+  <div class="section-label">Packages</div>
+  <h2 class="section-title">Simple pricing.<br>Serious results.</h2>
+  <p class="section-body">No long contracts. No hidden fees. Just clear deliverables and a team obsessed with putting money in your till.</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Starter</div><div class="price-amount">299</div><div class="price-period">per month</div>
+      <ul class="price-features"><li>Social media setup and management</li><li>3 to 5 posts per week</li><li>Google Business optimisation</li><li>Lead capture landing page</li></ul>
+      <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="btn-outline">Book a Call</a>
+    </div>
+    <div class="price-card featured">
+      <div class="featured-badge">Most Popular</div>
+      <div class="price-tier">Growth</div><div class="price-amount">800</div><div class="price-period">per month</div>
+      <ul class="price-features"><li>Full content creation Reels posts stories</li><li>Lead generation funnel</li><li>Automated email and SMS follow-ups</li><li>Basic ads management</li><li>Monthly performance report</li></ul>
+      <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="btn-outline">Book a Call</a>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Domination</div><div class="price-amount">2000+</div><div class="price-period">per month</div>
+      <ul class="price-features"><li>Full AI automation suite</li><li>Paid ads management and scaling</li><li>Website and funnel builds</li><li>CRM system setup</li><li>Sales pipeline and lead scoring</li><li>Ongoing optimisation and strategy</li></ul>
+      <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank" class="btn-outline">Book a Call</a>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:24px;text-align:center">Performance deals also available. We get you customers or you do not pay.</p>
+</section>
+<div class="divider"></div>
+<section class="testimonial-section fade-up">
+  <div class="section-label">Social Proof</div>
+  <blockquote class="testimonial-quote">Within six weeks they had our Instagram running, leads coming in daily, and a system that followed up automatically. I did not have to do a single thing.</blockquote>
+  <div class="testimonial-author">Restaurant Owner, London</div>
+  <div class="results-row">
+    <div class="result-item"><span class="result-num">340%</span><span class="result-label">More enquiries</span></div>
+    <div class="result-item"><span class="result-num">6200</span><span class="result-label">Extra monthly revenue</span></div>
+    <div class="result-item"><span class="result-num">14 days</span><span class="result-label">To first results</span></div>
+  </div>
+</section>
+<div class="divider"></div>
+<section class="about-section fade-up">
+  <div class="about-inner">
+    <div style="display:flex;align-items:center;gap:18px">
+      <img class="about-photo" src="https://i.ibb.co/sv7gnbXH/IMG-0157.jpg" alt="Tony">
+      <div>
+        <div class="section-label" style="margin-bottom:4px">Why The Back of House</div>
+        <div style="font-size:14px;color:var(--gold);font-weight:500">Tony - Founder and Executive Chef</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">18 years in hospitality</div>
+      </div>
+    </div>
+    <p class="about-text">I spent 18 years behind the pass. I know what 4am prep feels like. I know the pressure of a full service. And I know exactly what it means to have an empty restaurant.</p>
+    <p class="about-body">BackAIHouse was built by someone from the industry not a generic marketing agency. I have worked every station in every type of hospitality business. I understand covers, kitchen pressure, seasonal swings, and what actually makes a venue grow. That is our edge. And it is yours.</p>
+  </div>
+</section>
+<div class="divider"></div>
+<section class="cta-section fade-up" id="book">
+  <div class="section-label">Get Started</div>
+  <h2 class="section-title">Book your free<br>strategy call.</h2>
+  <p class="section-body">Tell us about your venue. We will show you exactly how to bring in more customers with zero guesswork.</p>
+  <div class="booking-card">
+    <h3>Book a Free Call</h3>
+    <p>Takes 2 minutes. We will reach out within 24 hours. For hospitality businesses serious about growth.</p>
+    <div id="booking-form">
+      <div class="form-group">
+        <input type="text" placeholder="Your name" id="f-name">
+        <input type="text" placeholder="Business name" id="f-biz">
+        <input type="email" placeholder="Email address" id="f-email">
+        <input type="tel" placeholder="Phone number optional">
+        <select><option value="" disabled selected>Type of venue</option><option>Restaurant</option><option>Cafe or Coffee Shop</option><option>Bar or Pub</option><option>Hotel or Venue</option><option>Takeaway or Fast Casual</option><option>Other</option></select>
+      </div>
+      <button class="form-submit" onclick="handleSubmit()">Book My Free Strategy Call</button>
+      <p class="form-note">No spam. No hard sell. Just a conversation about your goals.</p>
+    </div>
+    <div class="success-message" id="success-msg">
+      <h3>You are booked in.</h3>
+      <p>We will be in touch within 24 hours. Check your inbox.</p>
+    </div>
+  </div>
+</section>
+<footer>
+  <div style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:10px">The Back of House</div>
+  <div class="footer-tagline">The digital back of house for hospitality businesses.</div>
+  <div class="footer-links">
+    <a href="#how">How It Works</a>
+    <a href="https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69" target="_blank">Get Started</a>
+    <a href="mailto:hello@thebackofhouse.com">Contact</a>
+  </div>
+  <div class="footer-copy">2025 The Back of House. All rights reserved.</div>
+</footer>
+<script>
+const fadeEls=document.querySelectorAll('.fade-up');
+const fadeObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');fadeObs.unobserve(x.target)}})},{threshold:0.08});
+fadeEls.forEach(el=>fadeObs.observe(el));
+let idx=0;
+const track=document.getElementById('sliderTrack');
+const slides=track.querySelectorAll('.slide');
+const dotsWrap=document.getElementById('sliderDots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='slider-dot'+(i===0?' active':'');d.onclick=()=>goSlide(i);dotsWrap.appendChild(d)});
+function goSlide(n){idx=Math.max(0,Math.min(n,slides.length-1));const w=slides[0].offsetWidth+14;track.style.transform='translateX(-'+(idx===0?0:idx*w-8)+'px)';document.querySelectorAll('.slider-dot').forEach((d,i)=>d.classList.toggle('active',i===idx))}
+function slideNav(d){goSlide(idx+d)}
+setInterval(()=>goSlide((idx+1)%slides.length),3800);
+let tx=0;
+track.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+track.addEventListener('touchend',e=>{if(Math.abs(tx-e.changedTouches[0].clientX)>50)slideNav(tx>e.changedTouches[0].clientX?1:-1)},{passive:true});
+const cObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){document.querySelectorAll('.counter-num').forEach(el=>{const t=parseInt(el.dataset.target),step=Math.ceil(t/60);let c=0;const tm=setInterval(()=>{c=Math.min(c+step,t);el.textContent=c.toLocaleString();if(c>=t)clearInterval(tm)},25)});cObs.unobserve(x.target)}})},{threshold:0.3});
+const cEl=document.getElementById('counters');if(cEl)cObs.observe(cEl);
+const chartObs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){document.querySelectorAll('.bar-after').forEach(b=>setTimeout(()=>{b.style.height=b.dataset.h+'%'},200));const lp=document.querySelector('.line-path'),lf=document.querySelector('.line-fill');if(lp)lp.style.strokeDashoffset='0';if(lf)setTimeout(()=>lf.style.opacity='1',500);document.querySelectorAll('.metric-fill').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w},400));chartObs.unobserve(x.target)}})},{threshold:0.2});
+const bEl=document.getElementById('barChart');if(bEl)chartObs.observe(bEl);
+function handleSubmit(){const n=document.getElementById('f-name').value,e=document.getElementById('f-email').value,b=document.getElementById('f-biz').value;if(!n||!e||!b){alert('Please fill in your name, business name, and email.');return}window.open('https://www.onefunnelaway.com/?aff=4f1bb4b02142f51bc546c3a872a12650e58f20de8bae05c6813055098e353e69','_blank');document.getElementById('booking-form').style.display='none';document.getElementById('success-msg').style.display='block'}
+</script>
+</body>
+</html>
