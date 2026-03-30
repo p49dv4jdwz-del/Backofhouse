@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>BackAIHouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05070f;--card:#0c1220;--card2:#111927;--card3:#16202e;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.08);
+  --green:#00e676;--green-dim:rgba(0,230,118,0.07);
+  --red:#ff4d6d;--red-dim:rgba(255,77,109,0.07);
+  --blue:#4dabf7;--blue-dim:rgba(77,171,247,0.07);
+  --purple:#b48af7;--purple-dim:rgba(180,138,247,0.07);
+  --amber:#ffb347;--teal:#20c997;
+  --white:#eef2ff;--grey:#6b7fa3;--grey2:#2a3a52;
+  --nh:62px;
+}
+html,body{height:100%;overflow:hidden;max-width:430px;margin:0 auto;background:var(--bg)}
+body{color:var(--white);font-family:"DM Sans",sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+svg{display:block;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* LAYOUT */
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:rgba(5,7,15,0.98);border-bottom:1px solid var(–border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(30px)}
+.tb-logo{font-family:“Playfair Display”,serif;font-size:17px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.live-dot{width:6px;height:6px;background:var(–green);border-radius:50%;box-shadow:0 0 8px var(–green);animation:pulse 2s infinite;flex-shrink:0}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-plan{font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:3px 9px;border-radius:100px;font-weight:700}
+.plan-free{background:var(–grey2);color:var(–grey)}
+.plan-pro{background:var(–gold-dim);color:var(–gold);border:1px solid rgba(201,168,76,.2)}
+.tb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1a2535,#232f45);border:1.5px solid var(–border2);display:flex;align-items:center;justify-content:center;font-family:“Playfair Display”,serif;font-size:13px;font-weight:600;color:var(–gold);cursor:pointer;flex-shrink:0}
+
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:var(–nh);display:none;background:var(–bg)}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block;animation:fadeIn .2s ease}
+.sp{padding:18px}
+
+.bnav{height:var(–nh);background:rgba(5,7,15,0.98);border-top:1px solid var(–border);display:flex;flex-shrink:0;backdrop-filter:blur(30px)}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:4px 0;position:relative;color:var(–grey2);-webkit-tap-highlight-color:transparent;transition:color .2s}
+.bn svg{width:19px;height:19px;stroke-width:1.6}
+.bn-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.bn.active{color:var(–gold)}
+.bn.active::after{content:””;position:absolute;top:0;left:20%;right:20%;height:1.5px;background:linear-gradient(90deg,transparent,var(–gold),transparent);border-radius:0 0 2px 2px}
+
+/* TYPOGRAPHY */
+.stag{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(–gold);font-weight:600;margin-bottom:5px;opacity:.8}
+.stitle{font-family:“Playfair Display”,serif;font-size:22px;font-weight:400;line-height:1.25;margin-bottom:14px;letter-spacing:-.01em}
+.stitle em{font-style:italic;color:var(–green)}
+.stitle span{color:var(–gold)}
+
+/* CARDS */
+.card{background:var(–card);border:1px solid var(–border);border-radius:16px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+.card::before{content:””;position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.015) 0%,transparent 60%);pointer-events:none}
+.card-sm{background:var(–card);border:1px solid var(–border);border-radius:12px;padding:13px;margin-bottom:9px}
+
+/* BUTTONS */
+.btn{padding:12px 18px;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:“DM Sans”,sans-serif;border:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-tap-highlight-color:transparent;letter-spacing:.01em;transition:all .15s}
+.btn:active{transform:scale(.97);opacity:.9}
+.btng{background:linear-gradient(135deg,var(–green),#00c864);color:#000;box-shadow:0 4px 20px rgba(0,230,118,.2)}
+.btngold{background:linear-gradient(135deg,var(–gold),var(–gold2));color:#000;box-shadow:0 4px 20px rgba(201,168,76,.25)}
+.btno{background:transparent;border:1px solid var(–border2);color:var(–grey)}
+.btnbl{width:100%}
+.btnsm{padding:7px 13px;font-size:11px;border-radius:9px}
+
+/* FORM */
+.fl{font-size:10px;color:var(–grey);text-transform:uppercase;letter-spacing:.09em;font-weight:600;display:block;margin-bottom:5px;margin-top:13px}
+.fi{background:var(–card2);border:1px solid var(–border);border-radius:10px;padding:11px 13px;color:var(–white);font-family:“DM Sans”,sans-serif;font-size:13px;outline:none;width:100%;-webkit-appearance:none;transition:border-color .2s}
+.fi:focus{border-color:rgba(201,168,76,.4)}
+.fi::placeholder{color:var(–grey2)}
+.fsel{background:var(–card2);border:1px solid var(–border);border-radius:10px;padding:11px 13px;color:var(–white);font-family:“DM Sans”,sans-serif;font-size:13px;outline:none;width:100%;-webkit-appearance:none}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+.stat-box{background:var(–card);border:1px solid var(–border);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.stat-box::before{content:””;position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);pointer-events:none}
+.stat-num{font-family:“Playfair Display”,serif;font-size:24px;font-weight:600;line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:9px;color:var(–grey);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.stat-sub{font-size:10px;color:var(–grey);margin-top:3px}
+
+/* TABS */
+.mtabs{display:flex;background:var(–card);border:1px solid var(–border);border-radius:13px;padding:3px;gap:2px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.mtabs::-webkit-scrollbar{display:none}
+.mtab{flex-shrink:0;padding:8px 13px;font-size:10px;font-weight:700;color:var(–grey);cursor:pointer;border-radius:10px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.mtab.act{background:var(–card3);color:var(–white)}
+.tv{display:none}
+.tv.act{display:block}
+
+/* ROWS */
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(–border)}
+.row:last-child{border-bottom:none}
+.row-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tag{display:inline-flex;font-size:9px;font-weight:700;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.07em}
+.tg{background:var(–green-dim);color:var(–green);border:1px solid rgba(0,230,118,.15)}
+.tgo{background:var(–gold-dim);color:var(–gold);border:1px solid rgba(201,168,76,.15)}
+.tr{background:var(–red-dim);color:var(–red);border:1px solid rgba(255,77,109,.15)}
+.tb{background:var(–blue-dim);color:var(–blue);border:1px solid rgba(77,171,247,.15)}
+
+/* SWITCH */
+.sw{position:relative;width:44px;height:24px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw-s{position:absolute;inset:0;background:var(–grey2);border-radius:100px;cursor:pointer;transition:.3s}
+.sw-s::before{content:””;position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.sw input:checked+.sw-s{background:var(–green)}
+.sw input:checked+.sw-s::before{transform:translateX(20px)}
+
+/* PROGRESS */
+.pbw{background:rgba(255,255,255,.05);border-radius:100px;height:4px;overflow:hidden;margin-top:7px}
+.pbf{height:100%;border-radius:100px;transition:width 1.2s ease}
+
+/* LOCK OVERLAY */
+.lock-overlay{position:absolute;inset:0;background:rgba(5,7,15,.6);backdrop-filter:blur(4px);border-radius:inherit;display:flex;align-items:center;justify-content:center;z-index:10;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lock-badge{background:rgba(5,7,15,.9);border:1px solid rgba(201,168,76,.3);border-radius:100px;padding:7px 14px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(–gold)}
+
+/* PAYWALL SHEET */
+.paywall-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:flex-end;max-width:430px;left:50%;margin-left:-215px;backdrop-filter:blur(6px)}
+.paywall-bg.open{display:flex;animation:fadeIn .2s ease}
+.paywall-sheet{background:linear-gradient(180deg,#0e1825 0%,#090e18 100%);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;border-top:1px solid rgba(201,168,76,.15);animation:slideUp .3s ease}
+.paywall-handle{width:36px;height:4px;background:var(–border2);border-radius:100px;margin:0 auto 20px}
+.paywall-icon{width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(–gold)}
+.paywall-feat{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(–border)}
+.paywall-feat:last-of-type{border-bottom:none}
+.paywall-check{width:20px;height:20px;border-radius:50%;background:var(–green-dim);border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;color:var(–green);flex-shrink:0}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:none;align-items:flex-end;max-width:430px;left:50%;margin-left:-215px;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex;animation:fadeIn .2s ease}
+.modal-box{background:var(–card);border-radius:22px 22px 0 0;padding:22px 18px 36px;width:100%;max-height:88vh;overflow-y:auto;border-top:1px solid var(–border2);animation:slideUp .25s ease}
+.modal-handle{width:36px;height:4px;background:var(–border2);border-radius:100px;margin:0 auto 18px}
+.modal-title{font-family:“Playfair Display”,serif;font-size:19px;margin-bottom:16px}
+
+/* AI CHAT */
+.ai-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.ai-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ai-msgs::-webkit-scrollbar{display:none}
+.msg{max-width:88%;font-size:13px;line-height:1.6}
+.msg.ai{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.msg .bbl{padding:11px 14px;border-radius:16px;line-height:1.6}
+.msg.ai .bbl{background:var(–card2);border:1px solid var(–border);border-radius:4px 16px 16px 16px}
+.msg.user .bbl{background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(0,230,118,.05));border:1px solid rgba(0,230,118,.2);border-radius:16px 4px 16px 16px}
+.typing-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(–grey);animation:tdot 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+.chips{display:flex;gap:7px;padding:8px 16px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:7px 13px;border-radius:100px;background:var(–card2);border:1px solid var(–border2);font-size:11px;font-weight:600;color:var(–gold);cursor:pointer;white-space:nowrap;font-family:“DM Sans”,sans-serif;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.chip:active{background:var(–gold-dim)}
+.ai-input-row{display:flex;gap:9px;padding:10px 16px 16px;flex-shrink:0;border-top:1px solid var(–border);background:var(–bg)}
+.ai-inp{flex:1;background:var(–card2);border:1px solid var(–border);border-radius:11px;padding:11px 14px;color:var(–white);font-family:“DM Sans”,sans-serif;font-size:13px;outline:none;-webkit-appearance:none}
+.ai-inp:focus{border-color:rgba(201,168,76,.3)}
+.ai-inp::placeholder{color:var(–grey2)}
+.send-btn{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(–gold),var(–gold2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#000;-webkit-tap-highlight-color:transparent}
+
+/* SKELETON LOADER */
+.skel{background:linear-gradient(90deg,var(–card2) 25%,var(–card3) 50%,var(–card2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;height:14px;margin-bottom:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(10,20,35,.95);border:1px solid var(–border2);color:var(–white);padding:10px 20px;border-radius:100px;font-size:12px;font-weight:600;opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;max-width:300px;text-align:center;backdrop-filter:blur(20px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(0,230,118,.3);color:var(–green)}
+.toast.error{border-color:rgba(255,77,109,.3);color:var(–red)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(–border);margin:14px 0}
+
+/* ONBOARD STEPS */
+.ob-step{display:none}
+.ob-step.act{display:block}
+.step-ind{display:flex;align-items:center;gap:6px;margin-bottom:18px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(–grey2);transition:all .3s;flex-shrink:0}
+.step-dot.act{background:var(–gold);width:20px;border-radius:100px}
+.step-dot.done{background:var(–green)}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(–bg);z-index:600;display:flex;align-items:center;justify-content:center;padding:30px 20px;max-width:430px;left:50%;margin-left:-215px;overflow-y:auto}
+#onboardScreen{position:fixed;inset:0;background:var(–bg);z-index:550;display:none;overflow-y:auto;max-width:430px;left:50%;margin-left:-215px;padding:24px 20px 50px}
+
+/* FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.feat-card{background:var(–card);border:1px solid var(–border);border-radius:14px;padding:14px;position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.feat-card::before{content:””;position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);pointer-events:none}
+.feat-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.feat-name{font-size:13px;font-weight:700;margin-bottom:2px;letter-spacing:-.01em}
+.feat-desc{font-size:10px;color:var(–grey);font-weight:400;line-height:1.4}
+.feat-stat{font-size:10px;font-weight:700;margin-top:8px}
+</style>
+
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div id="loginScreen">
+  <div style="width:100%;max-width:320px">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:72px;height:72px;margin:0 auto 14px;position:relative">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(201,168,76,.25);animation:spin 10s linear infinite"></div>
+        <div style="position:absolute;inset:2px;border-radius:50%;border:1px solid rgba(201,168,76,.1)"></div>
+        <div style="position:absolute;inset:8px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(201,168,76,.5)"><img src="https://i.ibb.co/sv7gnbXH/IMG-0157.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top"></div>
+      </div>
+      <div style="font-family:Playfair Display,serif;font-size:28px;font-weight:400;letter-spacing:-.02em;margin-bottom:5px">BackAIHouse</div>
+      <div style="font-size:10px;color:var(--grey);text-transform:uppercase;letter-spacing:.15em">AI Business Platform</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:4px">Launch Offer</div>
+      <div style="font-family:Playfair Display,serif;font-size:26px;color:var(--gold);font-weight:600">&#163;4.99<span style="font-size:13px;color:var(--grey);font-weight:400">/month</span></div>
+      <div style="font-size:10px;color:var(--grey);margin-top:3px">First 3 months &#8212; then &#163;99/month</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px">
+      <label class="fl" style="margin-top:0">Access Code</label>
+      <input class="fi" type="text" id="accessCode" placeholder="Enter your access code" autocapitalize="characters" autocomplete="off">
+      <div id="loginErr" style="font-size:11px;color:var(--red);margin-top:7px;display:none;line-height:1.5">Invalid code. Subscribe to get your access code.</div>
+      <button class="btn btngold btnbl" style="margin-top:13px" id="enterBtn">Enter App</button>
+      <div class="divider"></div>
+      <button class="btn btnbl" style="background:transparent;border:1px solid var(--border2);color:var(--grey);font-size:12px" id="browseBtn">Browse Free &#8212; No code needed</button>
+      <a href="https://buy.stripe.com/8x2bJ11jy2pCdNq0wR6kg04" style="display:block;text-align:center;margin-top:12px;font-size:11px;color:var(--gold);text-decoration:none;font-weight:600">Get Access &#8212; &#163;4.99/month &#8250;</a>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARD SCREEN -->
+
+<div id="onboardScreen">
+  <div style="margin-bottom:24px">
+    <div style="font-family:Playfair Display,serif;font-size:24px;font-weight:400;margin-bottom:6px">Set up your<br><em style="color:var(--green)">business profile.</em></div>
+    <div style="font-size:12px;color:var(--grey);line-height:1.6">Takes 2 minutes. The AI builds everything around your specific venue.</div>
+  </div>
+  <div class="step-ind">
+    <div class="step-dot act" id="sd1"></div>
+    <div class="step-dot" id="sd2"></div>
+    <div class="step-dot" id="sd3"></div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px">
+    <div class="ob-step act" id="ob1">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--gold)">Step 1 &#8212; Your Venue</div>
+      <label class="fl" style="margin-top:0">Business Name</label>
+      <input class="fi" type="text" id="obName" placeholder="e.g. The Crown Restaurant">
+      <label class="fl">Type of Venue</label>
+      <select class="fsel" id="obType">
+        <option value="">Select type...</option>
+        <option>Restaurant</option><option>Cafe / Coffee Shop</option><option>Pub / Bar</option>
+        <option>Hotel Restaurant</option><option>Takeaway</option><option>Fine Dining</option><option>Street Food</option>
+      </select>
+      <label class="fl">Location / City</label>
+      <input class="fi" type="text" id="obLocation" placeholder="e.g. Manchester">
+      <label class="fl">Average Covers Per Day</label>
+      <input class="fi" type="number" id="obCovers" placeholder="e.g. 80">
+      <button class="btn btngold btnbl" style="margin-top:18px" id="ob1next">Continue</button>
+    </div>
+    <div class="ob-step" id="ob2">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--gold)">Step 2 &#8212; Revenue &amp; Goals</div>
+      <label class="fl" style="margin-top:0">Current Monthly Revenue</label>
+      <select class="fsel" id="obRevenue">
+        <option value="0">Select range...</option>
+        <option value="3000">Under &#163;5,000</option>
+        <option value="10000">&#163;5,000 &#8212; &#163;15,000</option>
+        <option value="22000">&#163;15,000 &#8212; &#163;30,000</option>
+        <option value="40000">Over &#163;30,000</option>
+      </select>
+      <label class="fl">Monthly Revenue Target</label>
+      <input class="fi" type="number" id="obTarget" placeholder="e.g. 25000">
+      <label class="fl">On delivery apps? (Uber Eats etc)</label>
+      <select class="fsel" id="obDelivery"><option value="no">No</option><option value="yes">Yes</option></select>
+      <label class="fl">Currently running paid ads?</label>
+      <select class="fsel" id="obAds"><option value="no">No</option><option value="yes">Yes</option><option value="sometimes">Sometimes</option></select>
+      <div style="display:flex;gap:9px;margin-top:18px">
+        <button class="btn btno" id="ob2back">Back</button>
+        <button class="btn btngold" style="flex:1" id="ob2next">Continue</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob3">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--gold)">Step 3 &#8212; Your Challenges</div>
+      <label class="fl" style="margin-top:0">Biggest Challenge Right Now</label>
+      <input class="fi" type="text" id="obChallenge" placeholder="e.g. Not enough customers">
+      <label class="fl">Number of Staff</label>
+      <input class="fi" type="number" id="obStaffCount" placeholder="e.g. 8">
+      <label class="fl">Approx Monthly Rent</label>
+      <input class="fi" type="number" id="obRent" placeholder="e.g. 3500">
+      <label class="fl">Main Goal</label>
+      <select class="fsel" id="obGoal">
+        <option value="more customers">More customers</option>
+        <option value="cut costs">Cut costs and waste</option>
+        <option value="better margins">Better profit margins</option>
+        <option value="all of the above">All of the above</option>
+      </select>
+      <div style="display:flex;gap:9px;margin-top:18px">
+        <button class="btn btno" id="ob3back">Back</button>
+        <button class="btn btngold" style="flex:1" id="ob3save">Build My Dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="tb-logo"><div class="live-dot"></div><span id="bizName">BackAIHouse</span></div>
+    <div class="tb-right">
+      <div class="tb-plan plan-free" id="planBadge">Free</div>
+      <div class="tb-av" id="topAvatar">B</div>
+    </div>
+  </div>
+
+  <div class="screens">
+
+```
+<!-- DASHBOARD -->
+<div class="screen active" id="s-dash">
+  <div class="sp">
+    <div class="stag">Dashboard</div>
+    <h2 class="stitle" id="dashTitle">Your business.<br><em>At a glance.</em></h2>
+
+    <!-- Revenue Hero Card -->
+    <div style="background:linear-gradient(135deg,#0a1a0f,#0a1520);border:1px solid rgba(0,230,118,.12);border-radius:18px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(0,230,118,.08),transparent);pointer-events:none"></div>
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.35);margin-bottom:8px">Monthly Revenue</div>
+      <div style="font-family:Playfair Display,serif;font-size:38px;font-weight:600;color:var(--white);line-height:1;margin-bottom:6px" id="dashRevenue">&#163;--</div>
+      <div style="font-size:11px;color:var(--grey)" id="dashTarget"></div>
+      <div style="height:3px;background:rgba(255,255,255,.06);border-radius:100px;margin-top:12px;overflow:hidden"><div id="dashTargetBar" style="height:100%;background:linear-gradient(90deg,var(--green),#00c864);border-radius:100px;width:0%;transition:width 1.5s ease"></div></div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box" style="border-color:rgba(255,77,109,.1)">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:6px">Total Costs</div>
+        <div class="stat-num" style="color:var(--red)" id="dashCosts">&#163;--</div>
+        <div class="stat-sub" id="dashCostsSub">incl. wages &amp; overheads</div>
+      </div>
+      <div class="stat-box" style="border-color:rgba(201,168,76,.1)">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:6px">Net Profit</div>
+        <div class="stat-num" id="dashProfit">&#163;--</div>
+        <div class="stat-sub" id="dashProfitMargin">after all costs</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:6px">Wage Bill</div>
+        <div class="stat-num" style="color:var(--blue)" id="dashWages">&#163;--</div>
+        <div class="stat-sub" id="dashWagesPct">monthly</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--grey);margin-bottom:6px">Wastage</div>
+        <div class="stat-num" style="color:var(--purple)" id="dashWastage">&#163;--</div>
+        <div class="stat-sub">this month</div>
+      </div>
+    </div>
+
+    <!-- AI Insights -->
+    <div id="dashInsights"></div>
+
+    <!-- Quick Actions (locked for free) -->
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--grey);font-weight:600;margin-bottom:10px">Quick Actions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <button class="btn btng btnsm" id="qaRevenue">+ Log Revenue</button>
+      <button class="btn btno btnsm" id="qaWastage">+ Log Wastage</button>
+      <button class="btn btno btnsm" id="qaStaff">+ Add Staff</button>
+      <button class="btn btno btnsm" id="qaCost">+ Add Cost</button>
+    </div>
+    <button class="btn btnbl" style="background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.2);color:var(--gold);margin-bottom:20px" id="qaBrain">Ask AI Brain about my numbers</button>
+  </div>
+</div>
+
+<!-- OPERATIONS -->
+<div class="screen" id="s-ops">
+  <div class="sp">
+    <div class="stag">Operations</div>
+    <h2 class="stitle">Track everything.<br><em>Cut what hurts.</em></h2>
+    <div class="mtabs" id="opsTabs">
+      <div class="mtab act" data-tab="staff">Staff</div>
+      <div class="mtab" data-tab="menu">Menu</div>
+      <div class="mtab" data-tab="costs">Costs</div>
+      <div class="mtab" data-tab="revenue">Revenue</div>
+      <div class="mtab" data-tab="wastage">Wastage</div>
+    </div>
+
+    <div class="tv act" id="tv-staff">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addStaffBtn">+ Add Staff Member</button>
+      <div id="staffSummary" style="display:none" class="card" style="border-color:rgba(0,230,118,.12);margin-bottom:13px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:10px;color:var(--grey);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Weekly Wages</div><div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold)" id="weeklyWages">&#163;0</div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--grey);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Monthly</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--red)" id="monthlyWages">&#163;0</div></div>
+        </div>
+      </div>
+      <div id="staffList"></div>
+    </div>
+
+    <div class="tv" id="tv-menu">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addMenuBtn">+ Add Menu Item</button>
+      <div id="menuSummary" style="display:none" class="card" style="border-color:rgba(201,168,76,.12);margin-bottom:13px">
+        <div style="display:flex;justify-content:space-between">
+          <div><div style="font-size:10px;color:var(--grey);margin-bottom:3px">Best Margin</div><div style="font-size:13px;font-weight:700;color:var(--green)" id="bestDish">--</div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--grey);margin-bottom:3px">Worst Margin</div><div style="font-size:13px;font-weight:700;color:var(--red)" id="worstDish">--</div></div>
+        </div>
+      </div>
+      <div id="menuList"></div>
+    </div>
+
+    <div class="tv" id="tv-costs">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addCostBtn">+ Add Overhead Cost</button>
+      <div id="costSummary" style="display:none" class="card" style="border-color:rgba(255,77,109,.12);margin-bottom:13px">
+        <div style="font-size:10px;color:var(--grey);margin-bottom:4px">Total Monthly Overheads</div>
+        <div style="font-family:Playfair Display,serif;font-size:28px;color:var(--red)" id="totalCosts">&#163;0</div>
+      </div>
+      <div id="costList"></div>
+    </div>
+
+    <div class="tv" id="tv-revenue">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addRevenueBtn">+ Log Today's Revenue</button>
+      <div id="revSummary" style="display:none" class="card" style="border-color:rgba(0,230,118,.12);margin-bottom:13px">
+        <div style="display:flex;justify-content:space-between">
+          <div><div style="font-size:10px;color:var(--grey);margin-bottom:4px">This Month</div><div style="font-family:Playfair Display,serif;font-size:24px;color:var(--green)" id="monthRevTotal">&#163;0</div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--grey);margin-bottom:4px">Daily Average</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)" id="dailyRevAvg">&#163;0</div></div>
+        </div>
+      </div>
+      <div id="revenueList"></div>
+    </div>
+
+    <div class="tv" id="tv-wastage">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addWastageBtn">+ Log Wastage</button>
+      <div id="wastageSummary" style="display:none" class="card" style="border-color:rgba(180,138,247,.12);margin-bottom:13px">
+        <div style="font-size:10px;color:var(--grey);margin-bottom:4px">Wastage This Month</div>
+        <div style="font-family:Playfair Display,serif;font-size:28px;color:var(--purple)" id="totalWastage">&#163;0</div>
+        <div style="font-size:10px;color:var(--grey);margin-top:4px">Industry target: under 3% of revenue</div>
+      </div>
+      <div id="wastageList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETING -->
+<div class="screen" id="s-mkt">
+  <div class="sp">
+    <div class="stag">Marketing</div>
+    <h2 class="stitle">Grow your<br><em>customer base.</em></h2>
+    <div class="mtabs">
+      <div class="mtab act" data-tab="campaigns" data-screen="mkt">Campaigns</div>
+      <div class="mtab" data-tab="content" data-screen="mkt">Content AI</div>
+      <div class="mtab" data-tab="repeat" data-screen="mkt">Repeat</div>
+      <div class="mtab" data-tab="reviews" data-screen="mkt">Reviews</div>
+    </div>
+
+    <div class="tv act" id="mtv-campaigns">
+      <button class="btn btng btnbl" style="margin-bottom:13px" id="addCampaignBtn">+ Launch Campaign</button>
+      <div id="campaignList">
+        <div style="text-align:center;padding:30px 20px;color:var(--grey)">
+          <div style="font-size:28px;margin-bottom:8px;opacity:.3">&#128640;</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">No campaigns yet</div>
+          <div style="font-size:11px;line-height:1.6">Launch your first campaign to start getting customers through the door.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tv" id="mtv-content">
+      <div class="card" style="border-color:rgba(201,168,76,.15)">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:7px">AI Content Generator</div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.6;margin-bottom:13px">Tell the AI what you need. It writes it for your specific venue.</div>
+        <select class="fsel" id="contentType" style="margin-bottom:10px">
+          <option value="Instagram Reel idea with caption and hooks">Instagram Reel idea + caption</option>
+          <option value="TikTok video concept and script">TikTok video concept</option>
+          <option value="Google Business post">Google Business post</option>
+          <option value="promotional offer post for social media">Promotional offer post</option>
+          <option value="behind the scenes content idea">Behind the scenes idea</option>
+          <option value="win-back email to lapsed customers">Win-back email</option>
+        </select>
+        <button class="btn btng btnbl" id="genContentBtn">Generate Content</button>
+      </div>
+      <div id="contentOutput"></div>
+    </div>
+
+    <div class="tv" id="mtv-repeat">
+      <div class="card" style="border-color:rgba(0,230,118,.15);margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:14px;font-weight:700">Repeat Engine</div><div style="font-size:11px;color:var(--grey);margin-top:2px">Auto customer win-back</div></div>
+          <label class="sw"><input type="checkbox" checked id="repeatToggle"><div class="sw-s"></div></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row" style="padding-top:0"><div style="flex:1"><div style="font-size:13px;font-weight:600">We Miss You</div><div style="font-size:11px;color:var(--grey)">After 7 days no visit</div></div><label class="sw"><input type="checkbox" checked><div class="sw-s"></div></label></div>
+        <div class="row"><div style="flex:1"><div style="font-size:13px;font-weight:600">Birthday Offer</div><div style="font-size:11px;color:var(--grey)">Free dessert before birthday</div></div><label class="sw"><input type="checkbox" checked><div class="sw-s"></div></label></div>
+        <div class="row"><div style="flex:1"><div style="font-size:13px;font-weight:600">Review Request</div><div style="font-size:11px;color:var(--grey)">2hrs after every visit</div></div><label class="sw"><input type="checkbox" checked><div class="sw-s"></div></label></div>
+        <div class="row" style="padding-bottom:0"><div style="flex:1"><div style="font-size:13px;font-weight:600">Weekly Promo</div><div style="font-size:11px;color:var(--grey)">Sunday night deal</div></div><label class="sw"><input type="checkbox"><div class="sw-s"></div></label></div>
+      </div>
+    </div>
+
+    <div class="tv" id="mtv-reviews">
+      <div class="card" style="border-color:rgba(255,179,71,.15);margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:5px">Review Generator</div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.6;margin-bottom:13px">AI writes a personalised review request for your venue right now.</div>
+        <button class="btn btng btnbl" id="genReviewBtn">Generate Review Request</button>
+      </div>
+      <div id="reviewOutput"></div>
+      <div class="card">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:600;margin-bottom:12px">Review Strategy</div>
+        <div class="row" style="padding-top:0"><div style="width:26px;height:26px;border-radius:50%;background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">1</div><div style="font-size:12px;color:var(--grey);line-height:1.5">Ask at the right moment &#8212; when they say "that was lovely"</div></div>
+        <div class="row"><div style="width:26px;height:26px;border-radius:50%;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">2</div><div style="font-size:12px;color:var(--grey);line-height:1.5">Reply to every review within 24hrs &#8212; good and bad</div></div>
+        <div class="row" style="padding-bottom:0"><div style="width:26px;height:26px;border-radius:50%;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(77,171,247,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">3</div><div style="font-size:12px;color:var(--grey);line-height:1.5">Put your Google review link on every receipt</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI BRAIN -->
+<div class="screen" id="s-brain">
+  <div class="ai-wrap">
+    <div style="padding:14px 18px 0;flex-shrink:0">
+      <div class="stag">AI Brain</div>
+      <h2 class="stitle" style="margin-bottom:10px">Your numbers.<br><em>Fully analysed.</em></h2>
+      <div style="background:linear-gradient(135deg,rgba(0,230,118,.05),rgba(77,171,247,.03));border:1px solid rgba(0,230,118,.12);border-radius:13px;padding:12px;margin-bottom:6px;font-size:11px;color:var(--grey);line-height:1.7">Reads your real data &#8212; revenue, costs, staff wages, menu margins, wastage &#8212; and tells you exactly what to do.</div>
+    </div>
+    <div class="chips">
+      <button class="chip" data-q="Analyse my business and tell me the top 3 things I should focus on to increase profit right now.">Analyse my business</button>
+      <button class="chip" data-q="Where am I losing the most money? Look at my costs, wastage and wage bill.">Find money leaks</button>
+      <button class="chip" data-q="Build me a 7-day action plan based on my specific business data and challenges.">Weekly plan</button>
+      <button class="chip" data-q="Which menu items should I promote and which should I cut based on margins?">Menu strategy</button>
+      <button class="chip" data-q="How do I get more customers this week for my specific venue?">Get customers</button>
+      <button class="chip" data-q="What marketing am I not doing that my competitors probably are?">Marketing gaps</button>
+    </div>
+    <div class="ai-msgs" id="brainMsgs">
+      <div class="msg ai"><div class="bbl">Hi. I'm your BackAIHouse AI Brain. I have full context on your business &#8212; your revenue, costs, wage bill, menu margins, and wastage. Ask me anything and I'll give you advice based on YOUR specific numbers, not generic advice.</div></div>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-inp" id="brainInput" placeholder="Ask me about your business..." type="text">
+      <button class="send-btn" id="brainSendBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="sp">
+    <div class="stag">Account</div>
+    <h2 class="stitle">Your<br><em>profile.</em></h2>
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:600;margin-bottom:12px">Business</div>
+      <div class="row" style="padding-top:0"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Name</div><div style="font-size:13px;font-weight:600" id="setBizName">--</div></div>
+      <div class="row"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Type</div><div style="font-size:13px;font-weight:600" id="setBizType">--</div></div>
+      <div class="row"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Location</div><div style="font-size:13px;font-weight:600" id="setBizLoc">--</div></div>
+      <div class="row" style="padding-bottom:0"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Target</div><div style="font-size:13px;font-weight:600;color:var(--green)" id="setBizTarget">--</div></div>
+    </div>
+    <div class="card" style="border-color:rgba(201,168,76,.15);margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Subscription</div>
+      <div id="setPlan" style="font-size:11px;color:var(--grey);margin-bottom:13px">Free plan &#8212; upgrade to unlock everything</div>
+      <a href="https://buy.stripe.com/8x2bJ11jy2pCdNq0wR6kg04" id="upgradeLink" style="display:block;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border-radius:11px;font-size:13px;font-weight:700;text-decoration:none;text-align:center">Upgrade &#8212; &#163;4.99/month</a>
+    </div>
+    <button class="btn btno btnbl" style="margin-bottom:20px" id="logoutBtn">Sign Out</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+
+  <div class="bnav">
+    <div class="bn active" id="bn-dash">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
+      <div class="bn-l">Dashboard</div>
+    </div>
+    <div class="bn" id="bn-ops">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="bn-l">Operations</div>
+    </div>
+    <div class="bn" id="bn-mkt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
+      <div class="bn-l">Marketing</div>
+    </div>
+    <div class="bn" id="bn-brain">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 01-4.96-.44 2.5 2.5 0 01-2.96-3.08 3 3 0 01-.34-5.58 2.5 2.5 0 013.32-3.97A2.5 2.5 0 019.5 2z"/><path d="M14.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 004.96-.44 2.5 2.5 0 002.96-3.08 3 3 0 00.34-5.58 2.5 2.5 0 00-3.32-3.97A2.5 2.5 0 0014.5 2z"/></svg>
+      <div class="bn-l">AI Brain</div>
+    </div>
+    <div class="bn" id="bn-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <div class="bn-l">Account</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYWALL SHEET -->
+
+<div class="paywall-bg" id="paywallBg">
+  <div class="paywall-sheet">
+    <div class="paywall-handle"></div>
+    <div class="paywall-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-family:Playfair Display,serif;font-size:22px;margin-bottom:6px">Unlock BackAIHouse</div>
+      <div style="font-size:12px;color:var(--grey);line-height:1.6">Full access to all features for your venue.</div>
+    </div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:18px">
+      <div class="paywall-feat"><div class="paywall-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:12px;font-weight:500">Full operations tracking &#8212; staff, menu, costs, revenue</div></div>
+      <div class="paywall-feat"><div class="paywall-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:12px;font-weight:500">AI Brain that reads YOUR real business data</div></div>
+      <div class="paywall-feat"><div class="paywall-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:12px;font-weight:500">Marketing campaigns, content AI, review generator</div></div>
+      <div class="paywall-feat"><div class="paywall-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:12px;font-weight:500">Wastage tracker, margin calculator, profit dashboard</div></div>
+      <div class="paywall-feat" style="border:none"><div class="paywall-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:12px;font-weight:500">Repeat Engine &#8212; automated customer win-back</div></div>
+    </div>
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:600">&#163;4.99<span style="font-size:14px;color:var(--grey);font-weight:400">/month</span></div>
+      <div style="font-size:10px;color:var(--grey);margin-top:3px">First 3 months &#8212; then &#163;99/month</div>
+    </div>
+    <a href="https://buy.stripe.com/8x2bJ11jy2pCdNq0wR6kg04" class="btn btngold btnbl" style="font-size:15px;padding:14px;text-decoration:none">Get Full Access</a>
+    <button class="btn btno btnbl" style="margin-top:10px;font-size:12px" id="paywallClose">Maybe later</button>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<div class="modal-bg" id="staffModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Staff Member</div>
+    <label class="fl" style="margin-top:0">Name</label><input class="fi" id="mStaffName" type="text" placeholder="e.g. Sarah">
+    <label class="fl">Role</label>
+    <select class="fsel" id="mStaffRole"><option>Chef</option><option>Sous Chef</option><option>Waiter/Waitress</option><option>Bartender</option><option>Kitchen Porter</option><option>Manager</option><option>Barista</option></select>
+    <label class="fl">Hourly Rate (&#163;)</label><input class="fi" id="mStaffRate" type="number" placeholder="e.g. 12.50" step="0.01">
+    <label class="fl">Hours Per Week</label><input class="fi" id="mStaffHours" type="number" placeholder="e.g. 40">
+    <div id="mStaffCalc" style="font-size:11px;color:var(--gold);margin-top:8px;min-height:16px"></div>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="staffClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="staffSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="menuModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Menu Item</div>
+    <label class="fl" style="margin-top:0">Dish Name</label><input class="fi" id="mMenuName" type="text" placeholder="e.g. Grilled Salmon">
+    <label class="fl">Category</label>
+    <select class="fsel" id="mMenuCat"><option>Starter</option><option>Main</option><option>Dessert</option><option>Drink</option><option>Special</option></select>
+    <label class="fl">Selling Price (&#163;)</label><input class="fi" id="mMenuPrice" type="number" step="0.01" placeholder="e.g. 18.00">
+    <label class="fl">Ingredient Cost (&#163;)</label><input class="fi" id="mMenuCost" type="number" step="0.01" placeholder="e.g. 5.50">
+    <div id="mMenuCalc" style="font-size:11px;color:var(--gold);margin-top:8px;min-height:16px"></div>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="menuClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="menuSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="costModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Cost</div>
+    <label class="fl" style="margin-top:0">Name</label><input class="fi" id="mCostName" type="text" placeholder="e.g. Rent">
+    <label class="fl">Category</label>
+    <select class="fsel" id="mCostCat"><option value="rent">Rent / Rates</option><option value="utilities">Utilities</option><option value="supplies">Supplies</option><option value="delivery_fees">Delivery App Fees</option><option value="marketing">Marketing</option><option value="insurance">Insurance</option><option value="other">Other</option></select>
+    <label class="fl">Amount (&#163;)</label><input class="fi" id="mCostAmount" type="number" placeholder="e.g. 3500">
+    <label class="fl">Frequency</label>
+    <select class="fsel" id="mCostFreq"><option value="monthly">Monthly</option><option value="weekly">Weekly</option></select>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="costClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="costSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="revModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Revenue</div>
+    <label class="fl" style="margin-top:0">Date</label><input class="fi" id="mRevDate" type="date">
+    <label class="fl">Total Takings (&#163;)</label><input class="fi" id="mRevAmount" type="number" step="0.01" placeholder="e.g. 1240">
+    <label class="fl">Covers / Customers</label><input class="fi" id="mRevCovers" type="number" placeholder="e.g. 85">
+    <label class="fl">Notes (optional)</label><input class="fi" id="mRevNotes" type="text" placeholder="e.g. Quiet Monday">
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="revClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="revSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="wastageModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Log Wastage</div>
+    <label class="fl" style="margin-top:0">Item</label><input class="fi" id="mWasteName" type="text" placeholder="e.g. Salmon fillet">
+    <label class="fl">Date</label><input class="fi" id="mWasteDate" type="date">
+    <label class="fl">Cost (&#163;)</label><input class="fi" id="mWasteCost" type="number" step="0.01" placeholder="e.g. 45.00">
+    <label class="fl">Reason</label>
+    <select class="fsel" id="mWasteReason"><option>Overordered</option><option>Expired</option><option>Prep waste</option><option>Cancelled order</option><option>Other</option></select>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="wastageClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="wastageSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="campaignModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Launch Campaign</div>
+    <label class="fl" style="margin-top:0">Campaign Name</label><input class="fi" id="mCampName" type="text" placeholder="e.g. January Offer">
+    <label class="fl">Offer</label><input class="fi" id="mCampOffer" type="text" placeholder="e.g. 10% off first visit">
+    <label class="fl">Platform</label>
+    <select class="fsel" id="mCampPlatform"><option>Facebook + Instagram</option><option>Instagram</option><option>Facebook</option><option>TikTok</option><option>Google Ads</option></select>
+    <label class="fl">Daily Budget (&#163;)</label><input class="fi" id="mCampBudget" type="number" placeholder="e.g. 10">
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <button class="btn btno" id="campClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="campSave">Launch</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var IS_PRO = false;
+var BIZ_ID = null;
+var BIZ = {};
+var CODES = ['BACKAIHOUSE','BAH2024','LAUNCH499'];
+var brainHistory = [];
+
+// -- UTILS --
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+function gb(id) { return document.getElementById(id); }
+
+function openModal(id) { gb(id).classList.add('open'); }
+function closeModal(id) { gb(id).classList.remove('open'); }
+
+function fmt(n) { return '\u00a3' + Math.round(n).toLocaleString(); }
+function fmtD(n) { return '\u00a3' + parseFloat(n).toFixed(2); }
+
+// -- PAYWALL --
+function showPaywall() {
+  gb('paywallBg').classList.add('open');
+}
+gb('paywallClose').addEventListener('click', function() {
+  gb('paywallBg').classList.remove('open');
+});
+gb('paywallBg').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// -- NAV --
+var SCREENS = ['dash','ops','mkt','brain','settings'];
+function go(id) {
+  SCREENS.forEach(function(s) {
+    gb('s-' + s).classList.toggle('active', s === id);
+    gb('bn-' + s).classList.toggle('active', s === id);
+  });
+  var sc = gb('s-' + id);
+  if (sc) sc.scrollTop = 0;
+  if (id === 'dash') loadDashboard();
+  if (id === 'ops') loadAllOps();
+  if (id === 'mkt') loadCampaigns();
+  if (id === 'brain' && !IS_PRO) { showPaywall(); return; }
+}
+SCREENS.forEach(function(s) {
+  gb('bn-' + s).addEventListener('click', function() { go(s); });
+});
+
+// -- LOGIN --
+gb('enterBtn').addEventListener('click', function() {
+  var code = gb('accessCode').value.trim().toUpperCase();
+  var err = gb('loginErr');
+  if (!code) { err.textContent = 'Please enter your access code.'; err.style.display = 'block'; return; }
+  if (CODES.indexOf(code) === -1) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  IS_PRO = true;
+  gb('loginScreen').style.display = 'none';
+  loadOrOnboard(code);
+});
+
+gb('browseBtn').addEventListener('click', function() {
+  IS_PRO = false;
+  gb('loginScreen').style.display = 'none';
+  BIZ = {name: 'Your Business', type: 'Restaurant', location: '', monthly_revenue: 0, target_revenue: 0};
+  startApp();
+});
+
+// -- ONBOARDING --
+function goObStep(n) {
+  [1,2,3].forEach(function(i) {
+    gb('ob' + i).classList.toggle('act', i === n);
+    var dot = gb('sd' + i);
+    if (dot) {
+      dot.classList.toggle('done', i < n);
+      dot.classList.toggle('act', i === n);
+      dot.classList.remove(i > n ? 'done' : '');
+    }
+  });
+}
+
+gb('ob1next').addEventListener('click', function() {
+  var name = gb('obName').value.trim();
+  var type = gb('obType').value;
+  if (!name || !type) { toast('Please fill in all fields', 'error'); return; }
+  BIZ.name = name;
+  BIZ.type = type;
+  BIZ.location = gb('obLocation').value;
+  BIZ.covers_per_day = parseInt(gb('obCovers').value) || 0;
+  goObStep(2);
+});
+gb('ob2back').addEventListener('click', function() { goObStep(1); });
+gb('ob2next').addEventListener('click', function() {
+  BIZ.monthly_revenue = parseFloat(gb('obRevenue').value) || 0;
+  BIZ.target_revenue = parseFloat(gb('obTarget').value) || 0;
+  BIZ.on_delivery_apps = gb('obDelivery').value === 'yes';
+  BIZ.runs_ads = gb('obAds').value === 'yes';
+  goObStep(3);
+});
+gb('ob3back').addEventListener('click', function() { goObStep(2); });
+gb('ob3save').addEventListener('click', async function() {
+  var btn = gb('ob3save');
+  btn.textContent = 'Building dashboard...';
+  btn.disabled = true;
+  BIZ.biggest_challenge = gb('obChallenge').value;
+  BIZ.access_code = BIZ.access_code || 'BACKAIHOUSE';
+  var result = await db('businesses', 'insert', BIZ);
+  if (result && result.length > 0) {
+    BIZ_ID = result[0].id;
+    BIZ = result[0];
+    var rent = parseFloat(gb('obRent').value);
+    if (rent > 0) await db('costs', 'insert', {business_id: BIZ_ID, name: 'Rent / Rates', amount: rent, frequency: 'monthly', category: 'rent'});
+    gb('onboardScreen').style.display = 'none';
+    startApp();
+    toast('Welcome to BackAIHouse!', 'success');
+  } else {
+    toast('Error saving. Check connection.', 'error');
+    btn.textContent = 'Build My Dashboard';
+    btn.disabled = false;
+  }
+});
+
+async function loadOrOnboard(code) {
+  var result = await db('businesses', 'select', null, {access_code: code});
+  if (result && result.length > 0) {
+    BIZ_ID = result[0].id;
+    BIZ = result[0];
+    startApp();
+  } else {
+    BIZ = {access_code: code};
+    gb('onboardScreen').style.display = 'block';
+  }
+}
+
+function startApp() {
+  gb('app').style.display = 'flex';
+  var init = BIZ.name ? BIZ.name.charAt(0).toUpperCase() : 'B';
+  gb('topAvatar').textContent = init;
+  gb('bizName').textContent = BIZ.name || 'BackAIHouse';
+  var badge = gb('planBadge');
+  if (IS_PRO) { badge.textContent = 'Pro'; badge.className = 'tb-plan plan-pro'; }
+  gb('setBizName').textContent = BIZ.name || '--';
+  gb('setBizType').textContent = BIZ.type || '--';
+  gb('setBizLoc').textContent = BIZ.location || '--';
+  gb('setBizTarget').textContent = BIZ.target_revenue ? fmt(BIZ.target_revenue) + '/mo' : '--';
+  if (IS_PRO) {
+    gb('setPlan').textContent = '\u00a34.99/month launch offer \u2014 3 months then \u00a399/month';
+  }
+  loadDashboard();
+}
+
+// -- DB --
+async function db(table, method, data, match) {
+  if (!IS_PRO) return [];
+  try {
+    var r = await fetch('/api/db', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({table: table, method: method, data: data, match: match})
+    });
+    var result = await r.json();
+    return Array.isArray(result) ? result : (result.error ? [] : [result]);
+  } catch(e) { return []; }
+}
+
+// -- DASHBOARD --
+async function loadDashboard() {
+  if (!IS_PRO || !BIZ_ID) {
+    // Show empty/demo state for free users
+    gb('dashRevenue').textContent = '\u00a3--';
+    gb('dashCosts').textContent = '\u00a3--';
+    gb('dashProfit').textContent = '\u00a3--';
+    gb('dashWages').textContent = '\u00a3--';
+    gb('dashWastage').textContent = '\u00a3--';
+    gb('dashInsights').innerHTML = '<div style="background:var(--gold-dim);border:1px solid rgba(201,168,76,.15);border-radius:13px;padding:13px;font-size:12px;color:var(--gold);line-height:1.6;margin-bottom:12px"><strong>Subscribe to unlock your real dashboard.</strong> Log revenue, track costs, see your actual profit margin in real time.</div>';
+    return;
+  }
+  var now = new Date();
+  var monthStart = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+  var revs = await db('revenue_entries', 'select', null, {business_id: BIZ_ID});
+  var costs = await db('costs', 'select', null, {business_id: BIZ_ID});
+  var staff = await db('staff', 'select', null, {business_id: BIZ_ID});
+  var waste = await db('wastage_entries', 'select', null, {business_id: BIZ_ID});
+
+  var monthRev = 0;
+  (revs || []).forEach(function(r) { if (r.date >= monthStart) monthRev += parseFloat(r.amount) || 0; });
+
+  var overheads = 0;
+  (costs || []).forEach(function(c) { overheads += c.frequency === 'weekly' ? (parseFloat(c.amount)||0)*4.33 : (parseFloat(c.amount)||0); });
+
+  var weeklyWages = 0;
+  (staff || []).forEach(function(s) { weeklyWages += (parseFloat(s.hourly_rate)||0)*(parseFloat(s.hours_per_week)||0); });
+  var monthlyWages = weeklyWages * 4.33;
+
+  var monthWaste = 0;
+  (waste || []).forEach(function(w) { if (w.date >= monthStart) monthWaste += parseFloat(w.cost)||0; });
+
+  var totalCosts = overheads + monthlyWages + monthWaste;
+  var profit = monthRev - totalCosts;
+  var margin = monthRev > 0 ? Math.round((profit/monthRev)*100) : 0;
+
+  gb('dashRevenue').textContent = fmt(monthRev);
+  gb('dashCosts').textContent = fmt(totalCosts);
+  gb('dashProfit').textContent = (profit >= 0 ? '' : '-') + fmt(Math.abs(profit));
+  gb('dashProfit').style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+  gb('dashWages').textContent = fmt(monthlyWages);
+  gb('dashWastage').textContent = fmt(monthWaste);
+  gb('dashProfitMargin').textContent = margin + '% margin';
+
+  var target = parseFloat(BIZ.target_revenue) || 0;
+  if (target > 0) {
+    var pct = Math.min(Math.round((monthRev/target)*100), 100);
+    gb('dashTarget').textContent = pct + '% of ' + fmt(target) + ' target';
+    gb('dashTargetBar').style.width = pct + '%';
+  }
+
+  // Insights
+  var insights = [];
+  if (profit < 0) insights.push({c:'var(--red)', t: 'You are running at a loss of ' + fmt(Math.abs(profit)) + ' this month. Review your biggest costs immediately.'});
+  if (monthWaste > monthRev * 0.05 && monthRev > 0) insights.push({c:'var(--purple)', t: 'Wastage is ' + Math.round((monthWaste/monthRev)*100) + '% of revenue. Industry target is under 3%.'});
+  if (monthlyWages > monthRev * 0.35 && monthRev > 0) insights.push({c:'var(--amber)', t: 'Wage bill is ' + Math.round((monthlyWages/monthRev)*100) + '% of revenue. Target is 28-32%.'});
+  if (monthRev === 0) insights.push({c:'var(--blue)', t: 'Log your daily revenue in Operations to see your real profit and get AI insights.'});
+  var ins = gb('dashInsights');
+  ins.innerHTML = '';
+  insights.forEach(function(i) {
+    var d = document.createElement('div');
+    d.style.cssText = 'background:rgba(5,7,15,.6);border:1px solid ' + i.c + '40;border-left:3px solid ' + i.c + ';border-radius:12px;padding:11px 13px;font-size:12px;color:' + i.c + ';line-height:1.6;margin-bottom:9px';
+    d.textContent = i.t;
+    ins.appendChild(d);
+  });
+}
+
+// -- OPS TABS --
+function switchOpsTab(tab) {
+  document.querySelectorAll('#opsTabs .mtab').forEach(function(t) { t.classList.toggle('act', t.getAttribute('data-tab') === tab); });
+  ['staff','menu','costs','revenue','wastage'].forEach(function(t) { gb('tv-' + t).classList.toggle('act', t === tab); });
+}
+document.querySelectorAll('#opsTabs .mtab').forEach(function(t) {
+  t.addEventListener('click', function() { switchOpsTab(t.getAttribute('data-tab')); });
+});
+
+// -- MKT TABS --
+document.querySelectorAll('#s-mkt .mtab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('#s-mkt .mtab').forEach(function(x) { x.classList.remove('act'); });
+    t.classList.add('act');
+    var tab = t.getAttribute('data-tab');
+    ['campaigns','content','repeat','reviews'].forEach(function(x) { gb('mtv-' + x).classList.toggle('act', x === tab); });
+  });
+});
+
+// -- PAYWALL ON FEATURE USE --
+function checkPro(fn) {
+  if (!IS_PRO) { showPaywall(); return; }
+  fn();
+}
+
+// Quick actions
+gb('qaRevenue').addEventListener('click', function() { checkPro(function() { go('ops'); switchOpsTab('revenue'); openRevModal(); }); });
+gb('qaWastage').addEventListener('click', function() { checkPro(function() { go('ops'); switchOpsTab('wastage'); openWastageModal(); }); });
+gb('qaStaff').addEventListener('click', function() { checkPro(function() { go('ops'); switchOpsTab('staff'); openModal('staffModal'); }); });
+gb('qaCost').addEventListener('click', function() { checkPro(function() { go('ops'); switchOpsTab('costs'); openModal('costModal'); }); });
+gb('qaBrain').addEventListener('click', function() { checkPro(function() { go('brain'); }); });
+
+// Ops buttons
+gb('addStaffBtn').addEventListener('click', function() { checkPro(function() { resetStaffModal(); openModal('staffModal'); }); });
+gb('addMenuBtn').addEventListener('click', function() { checkPro(function() { resetMenuModal(); openModal('menuModal'); }); });
+gb('addCostBtn').addEventListener('click', function() { checkPro(function() { resetCostModal(); openModal('costModal'); }); });
+gb('addRevenueBtn').addEventListener('click', function() { checkPro(function() { openRevModal(); }); });
+gb('addWastageBtn').addEventListener('click', function() { checkPro(function() { openWastageModal(); }); });
+gb('addCampaignBtn').addEventListener('click', function() { checkPro(function() { resetCampModal(); openModal('campaignModal'); }); });
+gb('genContentBtn').addEventListener('click', function() { checkPro(genContent); });
+gb('genReviewBtn').addEventListener('click', function() { checkPro(genReview); });
+
+// -- LOAD OPS --
+async function loadAllOps() {
+  if (!IS_PRO || !BIZ_ID) return;
+  loadStaff(); loadMenu(); loadCosts(); loadRevenue(); loadWastage();
+}
+
+function makeDelBtn(label, fn) {
+  var b = document.createElement('button');
+  b.className = 'btn btnr btnsm';
+  b.style.marginTop = '9px';
+  b.textContent = 'Remove';
+  b.addEventListener('click', fn);
+  return b;
+}
+
+function emptyState(msg) {
+  return '<div style="text-align:center;padding:28px 16px;color:var(--grey);font-size:12px;line-height:1.6">' + msg + '</div>';
+}
+
+// STAFF
+function resetStaffModal() { gb('mStaffName').value=''; gb('mStaffRate').value=''; gb('mStaffHours').value=''; gb('mStaffCalc').textContent=''; }
+gb('mStaffRate').addEventListener('input', calcStaff);
+gb('mStaffHours').addEventListener('input', calcStaff);
+function calcStaff() {
+  var r = parseFloat(gb('mStaffRate').value)||0;
+  var h = parseFloat(gb('mStaffHours').value)||0;
+  if (r&&h) gb('mStaffCalc').textContent = fmt(r*h) + '/week = ' + fmt(r*h*4.33) + '/month';
+}
+gb('staffClose').addEventListener('click', function() { closeModal('staffModal'); });
+gb('staffSave').addEventListener('click', async function() {
+  var name = gb('mStaffName').value.trim();
+  if (!name) { toast('Enter a name', 'error'); return; }
+  var data = {business_id: BIZ_ID, name: name, role: gb('mStaffRole').value, hourly_rate: parseFloat(gb('mStaffRate').value)||0, hours_per_week: parseFloat(gb('mStaffHours').value)||0};
+  await db('staff', 'insert', data);
+  closeModal('staffModal');
+  loadStaff();
+  toast(name + ' added!', 'success');
+});
+
+async function loadStaff() {
+  var data = await db('staff', 'select', null, {business_id: BIZ_ID});
+  var list = gb('staffList');
+  if (!data||!data.length) { list.innerHTML = emptyState('No staff added yet. Add your team to calculate your wage bill.'); gb('staffSummary').style.display='none'; return; }
+  var total = 0;
+  list.innerHTML = '';
+  data.forEach(function(s) {
+    var w = (parseFloat(s.hourly_rate)||0)*(parseFloat(s.hours_per_week)||0);
+    total += w;
+    var d = document.createElement('div');
+    d.className = 'card-sm';
+    d.style.marginBottom = '9px';
+    d.innerHTML = '<div style="display:flex;align-items:center;gap:11px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--card2),var(--card3));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:Playfair Display,serif;font-size:16px;font-weight:600;color:var(--gold);flex-shrink:0">' + s.name.charAt(0).toUpperCase() + '</div><div style="flex:1"><div style="font-size:13px;font-weight:700;margin-bottom:2px">' + s.name + '</div><div style="font-size:11px;color:var(--grey)">' + s.role + ' &bull; \u00a3' + s.hourly_rate + '/hr &bull; ' + s.hours_per_week + 'hrs/wk</div></div><div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:17px;font-weight:600;color:var(--gold)">' + fmt(w) + '</div><div style="font-size:9px;color:var(--grey)">weekly</div></div></div>';
+    d.appendChild(makeDelBtn('Remove', async function() { await db('staff', 'delete', null, {id: s.id}); loadStaff(); loadDashboard(); toast('Removed'); }));
+    list.appendChild(d);
+  });
+  gb('weeklyWages').textContent = fmt(total);
+  gb('monthlyWages').textContent = fmt(total*4.33);
+  gb('staffSummary').style.display = 'block';
+}
+
+// MENU
+function resetMenuModal() { gb('mMenuName').value=''; gb('mMenuPrice').value=''; gb('mMenuCost').value=''; gb('mMenuCalc').textContent=''; }
+gb('mMenuPrice').addEventListener('input', calcMenu);
+gb('mMenuCost').addEventListener('input', calcMenu);
+function calcMenu() {
+  var p = parseFloat(gb('mMenuPrice').value)||0;
+  var c = parseFloat(gb('mMenuCost').value)||0;
+  if (p>0) { var m=Math.round(((p-c)/p)*100); gb('mMenuCalc').textContent = 'Margin: ' + m + '% | Profit per cover: ' + fmtD(p-c); }
+}
+gb('menuClose').addEventListener('click', function() { closeModal('menuModal'); });
+gb('menuSave').addEventListener('click', async function() {
+  var name = gb('mMenuName').value.trim();
+  if (!name) { toast('Enter dish name', 'error'); return; }
+  await db('menu_items', 'insert', {business_id: BIZ_ID, name: name, category: gb('mMenuCat').value, selling_price: parseFloat(gb('mMenuPrice').value)||0, ingredient_cost: parseFloat(gb('mMenuCost').value)||0});
+  closeModal('menuModal');
+  loadMenu();
+  toast(name + ' added!', 'success');
+});
+
+async function loadMenu() {
+  var data = await db('menu_items', 'select', null, {business_id: BIZ_ID});
+  var list = gb('menuList');
+  if (!data||!data.length) { list.innerHTML = emptyState('No menu items added. Track dish margins to find your most and least profitable items.'); gb('menuSummary').style.display='none'; return; }
+  var best=null, worst=null;
+  list.innerHTML = '';
+  data.forEach(function(item) {
+    var m = item.selling_price>0 ? Math.round(((item.selling_price-item.ingredient_cost)/item.selling_price)*100) : 0;
+    if (!best||m>best.m) best={name:item.name,m:m};
+    if (!worst||m<worst.m) worst={name:item.name,m:m};
+    var col = m>=70?'var(--green)':m>=50?'var(--gold)':'var(--red)';
+    var d = document.createElement('div');
+    d.className = 'card-sm';
+    d.style.marginBottom = '9px';
+    d.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div><div style="font-size:13px;font-weight:700">' + item.name + '</div><div style="font-size:11px;color:var(--grey)">' + item.category + ' &bull; Cost: \u00a3' + item.ingredient_cost + ' &bull; Sell: \u00a3' + item.selling_price + '</div></div><div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:600;color:' + col + '">' + m + '%</div><div style="font-size:9px;color:var(--grey)">margin</div></div></div><div style="background:rgba(255,255,255,.04);border-radius:100px;height:3px;overflow:hidden"><div style="width:' + m + '%;height:100%;background:' + col + ';border-radius:100px"></div></div>';
+    d.appendChild(makeDelBtn('Remove', async function() { await db('menu_items', 'delete', null, {id: item.id}); loadMenu(); toast('Removed'); }));
+    list.appendChild(d);
+  });
+  if (best) gb('bestDish').textContent = best.name + ' (' + best.m + '%)';
+  if (worst) gb('worstDish').textContent = worst.name + ' (' + worst.m + '%)';
+  gb('menuSummary').style.display = 'block';
+}
+
+// COSTS
+function resetCostModal() { gb('mCostName').value=''; gb('mCostAmount').value=''; }
+gb('costClose').addEventListener('click', function() { closeModal('costModal'); });
+gb('costSave').addEventListener('click', async function() {
+  var name = gb('mCostName').value.trim();
+  if (!name) { toast('Enter cost name', 'error'); return; }
+  await db('costs', 'insert', {business_id: BIZ_ID, name: name, category: gb('mCostCat').value, amount: parseFloat(gb('mCostAmount').value)||0, frequency: gb('mCostFreq').value});
+  closeModal('costModal');
+  loadCosts();
+  loadDashboard();
+  toast(name + ' added!', 'success');
+});
+
+async function loadCosts() {
+  var data = await db('costs', 'select', null, {business_id: BIZ_ID});
+  var list = gb('costList');
+  if (!data||!data.length) { list.innerHTML = emptyState('No costs added. Track your overheads to see your true profit margin.'); gb('costSummary').style.display='none'; return; }
+  var total=0;
+  var catC={rent:'var(--red)',utilities:'var(--blue)',supplies:'var(--gold)',delivery_fees:'var(--purple)',marketing:'var(--green)',insurance:'var(--amber)',other:'var(--grey)'};
+  list.innerHTML = '';
+  data.forEach(function(c) {
+    var monthly = c.frequency==='weekly'?(parseFloat(c.amount)||0)*4.33:(parseFloat(c.amount)||0);
+    total+=monthly;
+    var col=catC[c.category]||'var(--grey)';
+    var d=document.createElement('div');
+    d.className='card-sm';
+    d.style.marginBottom='9px';
+    d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:'+col+';flex-shrink:0"></div><div><div style="font-size:13px;font-weight:700">'+c.name+'</div><div style="font-size:11px;color:var(--grey)">'+c.category.replace('_',' ')+' &bull; '+c.frequency+'</div></div></div><div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:var(--red)">'+fmt(monthly)+'</div><div style="font-size:9px;color:var(--grey)">per month</div></div></div>';
+    d.appendChild(makeDelBtn('Remove',async function(){await db('costs','delete',null,{id:c.id});loadCosts();loadDashboard();toast('Removed');}));
+    list.appendChild(d);
+  });
+  gb('totalCosts').textContent=fmt(total);
+  gb('costSummary').style.display='block';
+}
+
+// REVENUE
+function openRevModal() {
+  gb('mRevDate').value=new Date().toISOString().split('T')[0];
+  gb('mRevAmount').value=''; gb('mRevCovers').value=''; gb('mRevNotes').value='';
+  openModal('revModal');
+}
+gb('revClose').addEventListener('click', function() { closeModal('revModal'); });
+gb('revSave').addEventListener('click', async function() {
+  var amt=gb('mRevAmount').value;
+  if (!amt) { toast('Enter revenue amount','error'); return; }
+  await db('revenue_entries','insert',{business_id:BIZ_ID,date:gb('mRevDate').value,amount:parseFloat(amt),covers:parseInt(gb('mRevCovers').value)||null,notes:gb('mRevNotes').value});
+  closeModal('revModal');
+  loadRevenue();
+  loadDashboard();
+  toast('Revenue logged!','success');
+});
+
+async function loadRevenue() {
+  var data=await db('revenue_entries','select',null,{business_id:BIZ_ID});
+  var list=gb('revenueList');
+  if (!data||!data.length){list.innerHTML=emptyState('No revenue logged yet. Log daily takings to track your income and get AI insights.');gb('revSummary').style.display='none';return;}
+  var now=new Date();
+  var ms=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-01';
+  var tot=0,days=0;
+  var sorted=data.sort(function(a,b){return b.date.localeCompare(a.date);});
+  list.innerHTML='';
+  sorted.forEach(function(r){
+    if(r.date>=ms){tot+=parseFloat(r.amount)||0;days++;}
+    var d=document.createElement('div');
+    d.className='card-sm';
+    d.style.marginBottom='9px';
+    d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">'+r.date+'</div><div style="font-size:11px;color:var(--grey)">'+(r.covers||'--')+' covers'+(r.notes?' &bull; '+r.notes:'')+'</div></div><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:600;color:var(--green)">'+fmt(r.amount)+'</div></div>';
+    d.appendChild(makeDelBtn('Remove',async function(){await db('revenue_entries','delete',null,{id:r.id});loadRevenue();loadDashboard();toast('Removed');}));
+    list.appendChild(d);
+  });
+  gb('monthRevTotal').textContent=fmt(tot);
+  gb('dailyRevAvg').textContent=days>0?fmt(tot/days):'\u00a30';
+  gb('revSummary').style.display='block';
+}
+
+// WASTAGE
+function openWastageModal() {
+  gb('mWasteName').value=''; gb('mWasteDate').value=new Date().toISOString().split('T')[0]; gb('mWasteCost').value='';
+  openModal('wastageModal');
+}
+gb('wastageClose').addEventListener('click', function() { closeModal('wastageModal'); });
+gb('wastageSave').addEventListener('click', async function() {
+  var item=gb('mWasteName').value.trim();
+  if (!item) { toast('Enter item name','error'); return; }
+  await db('wastage_entries','insert',{business_id:BIZ_ID,item:item,date:gb('mWasteDate').value,cost:parseFloat(gb('mWasteCost').value)||0,reason:gb('mWasteReason').value});
+  closeModal('wastageModal');
+  loadWastage();
+  loadDashboard();
+  toast('Wastage logged!','success');
+});
+
+async function loadWastage() {
+  var data=await db('wastage_entries','select',null,{business_id:BIZ_ID});
+  var list=gb('wastageList');
+  if (!data||!data.length){list.innerHTML=emptyState('No wastage logged. Track waste to see exactly where money is being thrown away.');gb('wastageSummary').style.display='none';return;}
+  var now=new Date();
+  var ms=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-01';
+  var tot=0;
+  var sorted=data.sort(function(a,b){return b.date.localeCompare(a.date);});
+  list.innerHTML='';
+  sorted.forEach(function(w){
+    if(w.date>=ms)tot+=parseFloat(w.cost)||0;
+    var d=document.createElement('div');
+    d.className='card-sm';
+    d.style.marginBottom='9px';
+    d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">'+w.item+'</div><div style="font-size:11px;color:var(--grey)">'+w.date+' &bull; '+w.reason+'</div></div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:var(--purple)">'+fmtD(w.cost)+'</div></div>';
+    d.appendChild(makeDelBtn('Remove',async function(){await db('wastage_entries','delete',null,{id:w.id});loadWastage();loadDashboard();toast('Removed');}));
+    list.appendChild(d);
+  });
+  gb('totalWastage').textContent=fmtD(tot);
+  gb('wastageSummary').style.display='block';
+}
+
+// CAMPAIGNS
+function resetCampModal() { gb('mCampName').value=''; gb('mCampOffer').value=''; gb('mCampBudget').value=''; }
+gb('campClose').addEventListener('click', function() { closeModal('campaignModal'); });
+gb('campSave').addEventListener('click', async function() {
+  var name=gb('mCampName').value.trim();
+  if (!name) { toast('Enter campaign name','error'); return; }
+  await db('campaigns','insert',{business_id:BIZ_ID,name:name,offer:gb('mCampOffer').value,platform:gb('mCampPlatform').value,budget_daily:parseFloat(gb('mCampBudget').value)||0,status:'live'});
+  closeModal('campaignModal');
+  loadCampaigns();
+  toast(name+' launched!','success');
+});
+
+async function loadCampaigns() {
+  if (!IS_PRO||!BIZ_ID) return;
+  var data=await db('campaigns','select',null,{business_id:BIZ_ID});
+  var list=gb('campaignList');
+  if (!data||!data.length){list.innerHTML='<div style="text-align:center;padding:30px 20px;color:var(--grey)"><div style="font-size:28px;margin-bottom:8px;opacity:.3">&#128640;</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">No campaigns yet</div><div style="font-size:11px;line-height:1.6">Launch your first campaign to start getting customers through the door.</div></div>';return;}
+  list.innerHTML='';
+  data.forEach(function(c){
+    var col=c.status==='live'?'var(--green)':'var(--gold)';
+    var d=document.createElement('div');
+    d.className='card-sm';
+    d.style.marginBottom='9px';
+    d.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div><div style="font-size:14px;font-weight:700">'+c.name+'</div><div style="font-size:11px;color:var(--grey)">'+c.platform+' &bull; \u00a3'+c.budget_daily+'/day</div></div><div style="font-size:10px;font-weight:700;color:'+col+';text-transform:uppercase;padding:3px 9px;background:'+col+'15;border:1px solid '+col+'30;border-radius:100px">'+c.status+'</div></div>'+(c.offer?'<div style="font-size:12px;color:var(--grey);margin-bottom:4px">'+c.offer+'</div>':'');
+    d.appendChild(makeDelBtn('Remove',async function(){await db('campaigns','delete',null,{id:c.id});loadCampaigns();toast('Removed');}));
+    list.appendChild(d);
+  });
+}
+
+// -- AI --
+async function callAI(prompt, system) {
+  var sys = system || ('You are BackAIHouse AI Brain, a specialist hospitality business consultant. Business context: ' + JSON.stringify({name:BIZ.name,type:BIZ.type,location:BIZ.location,monthly_revenue:BIZ.monthly_revenue,target:BIZ.target_revenue,challenge:BIZ.biggest_challenge,on_delivery_apps:BIZ.on_delivery_apps,runs_ads:BIZ.runs_ads}) + '. Give direct, specific, actionable advice under 200 words. End with one TODAY action.');
+  try {
+    var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]})});
+    if (!r.ok) return 'Error ' + r.status + '. Check Vercel environment variables.';
+    var d=await r.json();
+    return (d.content&&d.content[0])?d.content[0].text:'Something went wrong.';
+  } catch(e) { return 'Connection error: ' + e.message; }
+}
+
+async function genContent() {
+  var btn=gb('genContentBtn');
+  btn.textContent='Generating...';
+  btn.disabled=true;
+  var type=gb('contentType').value;
+  var reply=await callAI('Write a '+type+' for '+BIZ.name+', a '+BIZ.type+' in '+(BIZ.location||'the UK')+'. Make it specific, engaging, ready to post. Include relevant hashtags. Keep it authentic and punchy.','You are a social media expert for hospitality. Write ready-to-use content that sounds authentic. Always end with a call to action.');
+  var out=gb('contentOutput');
+  out.innerHTML='<div class="card-sm" style="border-color:rgba(201,168,76,.15);margin-top:10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:9px">'+type+'</div><div style="font-size:13px;line-height:1.7;white-space:pre-wrap" id="cText">'+reply+'</div><button class="btn btng btnsm" style="margin-top:11px" id="copyBtn">Copy</button></div>';
+  gb('copyBtn').addEventListener('click',function(){navigator.clipboard.writeText(gb('cText').textContent).then(function(){toast('Copied!','success');}).catch(function(){toast('Select and copy manually');});});
+  btn.textContent='Generate Content';
+  btn.disabled=false;
+}
+
+async function genReview() {
+  var btn=gb('genReviewBtn');
+  btn.textContent='Generating...';
+  btn.disabled=true;
+  var reply=await callAI('Write a friendly, personal review request for '+BIZ.name+'. Feels genuine, not automated. Ask for a Google review. Mention how much it means to a small business. Under 80 words.','You write warm, genuine messages for hospitality businesses.');
+  var out=gb('reviewOutput');
+  out.innerHTML='<div class="card-sm" style="border-color:rgba(0,230,118,.15);margin-bottom:12px"><div style="font-size:13px;line-height:1.7;white-space:pre-wrap" id="rText">'+reply+'</div><button class="btn btng btnsm" style="margin-top:11px" id="copyRev">Copy</button></div>';
+  gb('copyRev').addEventListener('click',function(){navigator.clipboard.writeText(gb('rText').textContent).then(function(){toast('Copied!','success');}).catch(function(){toast('Select and copy manually');});});
+  btn.textContent='Generate Review Request';
+  btn.disabled=false;
+}
+
+// BRAIN
+async function brainSend(msg) {
+  if (!msg.trim()) return;
+  if (!IS_PRO) { showPaywall(); return; }
+  var msgs=gb('brainMsgs');
+  var ud=document.createElement('div');
+  ud.className='msg user';
+  ud.innerHTML='<div class="bbl">'+msg+'</div>';
+  msgs.appendChild(ud);
+  brainHistory.push({role:'user',content:msg});
+  gb('brainInput').value='';
+  gb('brainSendBtn').disabled=true;
+  var td=document.createElement('div');
+  td.className='msg ai';
+  td.id='bTyping';
+  td.innerHTML='<div class="bbl"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+  msgs.appendChild(td);
+  msgs.scrollTop=msgs.scrollHeight;
+  try {
+    var sys='You are the BackAIHouse AI Brain, a specialist hospitality consultant. Business data: name='+BIZ.name+', type='+BIZ.type+', location='+BIZ.location+', monthly revenue=\u00a3'+BIZ.monthly_revenue+', target=\u00a3'+BIZ.target_revenue+', challenge='+BIZ.biggest_challenge+', on delivery apps='+BIZ.on_delivery_apps+', runs ads='+BIZ.runs_ads+'. Give direct, specific, numbered advice based on THEIR real data. End with one TODAY action. Under 200 words.';
+    var hist=brainHistory.slice(-10);
+    var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:hist})});
+    var bt=gb('bTyping');
+    if (bt) bt.remove();
+    var reply='';
+    if (!r.ok) {
+      var ed=await r.json().catch(function(){return{};});
+      reply='Error '+r.status+': '+(ed.error||'Check Vercel env vars');
+    } else {
+      var d=await r.json();
+      reply=(d.content&&d.content[0])?d.content[0].text:'Something went wrong.';
+      brainHistory.push({role:'assistant',content:reply});
+    }
+    var ad=document.createElement('div');
+    ad.className='msg ai';
+    ad.innerHTML='<div class="bbl">'+reply+'</div>';
+    msgs.appendChild(ad);
+  } catch(e) {
+    var bt2=gb('bTyping');
+    if (bt2) bt2.remove();
+    var ed2=document.createElement('div');
+    ed2.className='msg ai';
+    ed2.innerHTML='<div class="bbl" style="color:var(--red)">Connection error: '+e.message+'</div>';
+    msgs.appendChild(ed2);
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+  gb('brainSendBtn').disabled=false;
+}
+
+gb('brainSendBtn').addEventListener('click', function() { brainSend(gb('brainInput').value); });
+gb('brainInput').addEventListener('keydown', function(e) { if (e.key==='Enter'){e.preventDefault();brainSend(this.value);} });
+document.querySelectorAll('#brainChips .chip').forEach(function(c) {
+  c.addEventListener('click', function() { brainSend(c.getAttribute('data-q')); });
+});
+
+// LOGOUT
+gb('logoutBtn').addEventListener('click', function() {
+  IS_PRO=false; BIZ_ID=null; BIZ={}; brainHistory=[];
+  gb('app').style.display='none';
+  gb('loginScreen').style.display='flex';
+  gb('accessCode').value='';
+});
+
+// Close modals on bg tap
+['staffModal','menuModal','costModal','revModal','wastageModal','campaignModal'].forEach(function(id) {
+  gb(id).addEventListener('click', function(e) { if (e.target===this) closeModal(id); });
+});
+
+// Repeat toggle
+gb('repeatToggle').addEventListener('change', function() { if (!IS_PRO) { this.checked=!this.checked; showPaywall(); } else toast(this.checked?'Repeat Engine on':'Repeat Engine off'); });
+</script>
+
+</body>
+</html>
