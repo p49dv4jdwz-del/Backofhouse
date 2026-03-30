@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>BackAIHouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#060810;--card:#0f1620;--card2:#161e2a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--gold:#c9a84c;--gold2:#e4c778;--gold-dim:rgba(201,168,76,0.1);--green:#00e676;--green2:#69f0ae;--green-dim:rgba(0,230,118,0.08);--red:#ff4d6d;--red-dim:rgba(255,77,109,0.08);--blue:#4dabf7;--blue-dim:rgba(77,171,247,0.08);--purple:#cc5de8;--purple-dim:rgba(204,93,232,0.08);--amber:#ffb347;--teal:#20c997;--teal-dim:rgba(32,201,151,0.08);--white:#f0f4ff;--grey:#8899aa;--grey2:#3a4a5a;--nh:60px}
+html,body{height:100%;overflow:hidden;max-width:430px;margin:0 auto;background:var(--bg)}
+body{color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+svg{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden;display:none}
+.topbar{background:rgba(6,8,16,0.97);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;display:flex;align-items:center;gap:7px}
+.live{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.tb-av{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;flex-shrink:0}
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:var(--nh);display:none;background:var(--bg)}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block}
+.sp{padding:16px}
+.bnav{height:var(--nh);background:rgba(6,8,16,0.97);border-top:1px solid var(--border);display:flex;flex-shrink:0}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:4px 0;position:relative;color:var(--grey2);-webkit-tap-highlight-color:transparent}
+.bn svg{width:18px;height:18px}
+.bn-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.bn.active{color:var(--green)}
+.bn.active::after{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:var(--green);border-radius:0 0 2px 2px}
+.bn-dot{position:absolute;top:5px;right:24%;width:6px;height:6px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+.stag{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:4px}
+.stitle{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;line-height:1.2;margin-bottom:12px}
+.stitle em{font-style:italic;color:var(--green)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.btn{padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;-webkit-tap-highlight-color:transparent}
+.btn:active{opacity:.8}
+.btng{background:linear-gradient(135deg,var(--green),var(--green2));color:#000}
+.btngold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000}
+.btno{background:transparent;border:1px solid var(--border2);color:var(--grey)}
+.btnr{background:var(--red-dim);border:1px solid rgba(255,77,109,.2);color:var(--red)}
+.btnbl{width:100%}
+.btnsm{padding:6px 12px;font-size:11px;border-radius:8px}
+.fl{font-size:10px;color:var(--grey);text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:block;margin-bottom:5px;margin-top:11px}
+.fi{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;-webkit-appearance:none}
+.fi::placeholder{color:var(--grey2)}
+.fsel{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;-webkit-appearance:none}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;line-height:1;margin-bottom:3px}
+.stat-lbl{font-size:9px;color:var(--grey);text-transform:uppercase;letter-spacing:.07em}
+.mtabs{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:3px;gap:2px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.mtabs::-webkit-scrollbar{display:none}
+.mtab{flex-shrink:0;padding:7px 11px;font-size:10px;font-weight:700;color:var(--grey);cursor:pointer;border-radius:9px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.mtab.act{background:var(--card2);color:var(--white)}
+.tv{display:none}
+.tv.act{display:block}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.tag{display:inline-flex;font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em}
+.tg{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.tgo{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+.tr{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+.sw{position:relative;width:44px;height:24px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw-s{position:absolute;inset:0;background:var(--grey2);border-radius:100px;cursor:pointer;transition:.3s}
+.sw-s::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.sw input:checked+.sw-s{background:var(--green)}
+.sw input:checked+.sw-s::before{transform:translateX(20px)}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:#000;padding:9px 18px;border-radius:100px;font-size:12px;font-weight:700;opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;max-width:300px;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;max-width:430px;left:50%;margin-left:-215px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px 34px;width:100%;max-height:88vh;overflow-y:auto}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px}
+.ai-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.ai-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ai-msgs::-webkit-scrollbar{display:none}
+.msg{max-width:90%;font-size:13px;line-height:1.55}
+.msg.ai{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.msg .bbl{padding:10px 13px;border-radius:14px}
+.msg.ai .bbl{background:var(--card2);border:1px solid var(--border);border-radius:4px 14px 14px 14px}
+.msg.user .bbl{background:var(--green-dim);border:1px solid rgba(0,230,118,.2);border-radius:14px 4px 14px 14px}
+.chips{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:6px 12px;border-radius:100px;background:var(--card2);border:1px solid var(--border2);font-size:11px;font-weight:600;color:var(--gold);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+.ai-input-row{display:flex;gap:8px;padding:10px 14px 14px;flex-shrink:0;border-top:1px solid var(--border);background:var(--bg)}
+.ai-inp{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;-webkit-appearance:none}
+.ai-inp::placeholder{color:var(--grey2)}
+.send-btn{width:40px;height:40px;border-radius:10px;background:var(--green);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#000}
+.pbw{background:rgba(255,255,255,.06);border-radius:100px;height:5px;overflow:hidden;margin-top:5px}
+.pbf{height:100%;border-radius:100px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:30px 20px;max-width:430px;left:50%;margin-left:-215px">
+  <div style="width:100%;max-width:300px">
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="width:70px;height:70px;margin:0 auto 12px;position:relative">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(201,168,76,.3);animation:spin 8s linear infinite"></div>
+        <div style="position:absolute;inset:6px;border-radius:50%;overflow:hidden;border:1.5px solid var(--gold)"><img src="https://i.ibb.co/sv7gnbXH/IMG-0157.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top"></div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px">BackAIHouse</div>
+      <div style="font-size:10px;color:var(--grey);margin-top:3px;text-transform:uppercase;letter-spacing:.12em">AI Business Platform</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px;text-align:center;margin-bottom:12px">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:2px">Launch Offer</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)">&#163;4.99<span style="font-size:12px;color:var(--grey)">/month</span></div>
+      <div style="font-size:10px;color:var(--grey);margin-top:1px">First 3 months &#8212; then &#163;99/month</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px">
+      <label class="fl" style="margin-top:0">Access Code</label>
+      <input class="fi" type="text" id="accessCode" placeholder="Enter your access code" autocapitalize="characters">
+      <div id="loginErr" style="font-size:11px;color:var(--red);margin-top:6px;display:none">Invalid code. Subscribe below to get access.</div>
+      <button class="btn btng btnbl" style="margin-top:12px" id="enterBtn">Enter App</button>
+      <div style="height:1px;background:var(--border);margin:14px 0"></div>
+      <a href="https://buy.stripe.com/8x2bJ11jy2pCdNq0wR6kg04" style="display:block;padding:11px;background:linear-gradient(135deg,#c9a84c,#e4c778);color:#000;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none;text-align:center">Get Access &#8212; &#163;4.99/month</a>
+      <div style="font-size:10px;color:var(--grey);text-align:center;margin-top:8px">Subscribed? Check email for your code</div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+
+<div id="onboardScreen" style="position:fixed;inset:0;background:var(--bg);z-index:400;display:none;overflow-y:auto;max-width:430px;left:50%;margin-left:-215px;padding:20px 16px 40px">
+  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:4px">Step <span id="obStep">1</span> of 3</div>
+  <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:400;margin-bottom:6px;line-height:1.2" id="obTitle">Tell me about your business</h2>
+  <p style="font-size:12px;color:var(--grey);margin-bottom:18px" id="obSub">The AI builds everything around your specific venue.</p>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px">
+
+```
+<!-- Step 1: Business Basics -->
+<div id="ob1">
+  <label class="fl" style="margin-top:0">Business Name</label>
+  <input class="fi" type="text" id="obName" placeholder="e.g. The Crown">
+  <label class="fl">Type of Venue</label>
+  <select class="fsel" id="obType">
+    <option value="">Select...</option>
+    <option value="Restaurant">Restaurant</option>
+    <option value="Cafe">Cafe / Coffee Shop</option>
+    <option value="Pub">Pub / Bar</option>
+    <option value="Hotel">Hotel Restaurant</option>
+    <option value="Takeaway">Takeaway</option>
+    <option value="Fine Dining">Fine Dining</option>
+    <option value="Street Food">Street Food</option>
+  </select>
+  <label class="fl">Location / City</label>
+  <input class="fi" type="text" id="obLocation" placeholder="e.g. Manchester">
+  <label class="fl">Average Covers Per Day</label>
+  <input class="fi" type="number" id="obCovers" placeholder="e.g. 80">
+  <button class="btn btng btnbl" style="margin-top:16px" id="ob1next">Next: Revenue &amp; Goals</button>
+</div>
+
+<!-- Step 2: Revenue & Goals -->
+<div id="ob2" style="display:none">
+  <label class="fl" style="margin-top:0">Current Monthly Revenue (approx)</label>
+  <select class="fsel" id="obRevenue">
+    <option value="">Select range...</option>
+    <option value="3000">Under &#163;5,000</option>
+    <option value="10000">&#163;5,000 &#8212; &#163;15,000</option>
+    <option value="22000">&#163;15,000 &#8212; &#163;30,000</option>
+    <option value="40000">Over &#163;30,000</option>
+  </select>
+  <label class="fl">Target Monthly Revenue</label>
+  <input class="fi" type="number" id="obTarget" placeholder="e.g. 25000">
+  <label class="fl">Do you run paid ads currently?</label>
+  <select class="fsel" id="obAds">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+    <option value="sometimes">Sometimes</option>
+  </select>
+  <label class="fl">Are you on delivery apps? (Uber Eats etc)</label>
+  <select class="fsel" id="obDelivery">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>
+  <div style="display:flex;gap:9px;margin-top:16px">
+    <button class="btn btno" id="ob2back">Back</button>
+    <button class="btn btng" style="flex:1" id="ob2next">Next: Your Challenges</button>
+  </div>
+</div>
+
+<!-- Step 3: Challenges -->
+<div id="ob3" style="display:none">
+  <label class="fl" style="margin-top:0">Biggest Challenge Right Now</label>
+  <input class="fi" type="text" id="obChallenge" placeholder="e.g. Not enough customers">
+  <label class="fl">Number of Staff</label>
+  <input class="fi" type="number" id="obStaffCount" placeholder="e.g. 8">
+  <label class="fl">Monthly Rent / Main Overhead</label>
+  <input class="fi" type="number" id="obRent" placeholder="e.g. 3500">
+  <label class="fl">What do you want from BackAIHouse?</label>
+  <select class="fsel" id="obGoal">
+    <option value="more customers">More customers</option>
+    <option value="cut costs">Cut costs and waste</option>
+    <option value="better margins">Better profit margins</option>
+    <option value="all of the above">All of the above</option>
+  </select>
+  <div style="display:flex;gap:9px;margin-top:16px">
+    <button class="btn btno" id="ob3back">Back</button>
+    <button class="btn btng" style="flex:1" id="ob3save">Build My Dashboard</button>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- MAIN APP -->
+
+<div id="app">
+  <div class="topbar">
+    <div class="tb-logo"><div class="live"></div><span id="bizName">BackAIHouse</span></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-size:10px;color:var(--grey)" id="topRevenue"></div>
+      <div class="tb-av" id="topAvatar">B</div>
+    </div>
+  </div>
+
+  <div class="screens">
+
+```
+<!-- DASHBOARD -->
+<div class="screen active" id="s-dash">
+  <div class="sp">
+    <div class="stag">Live Dashboard</div>
+    <h2 class="stitle" id="dashTitle">Your business.<br><em>Right now.</em></h2>
+
+    <div class="stat-grid" id="dashStats">
+      <div class="stat-box" style="grid-column:span 2;background:linear-gradient(135deg,#0a1f12,#0e1820);border-color:rgba(0,230,118,.2)">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);margin-bottom:4px">Monthly Revenue</div>
+        <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:600;color:var(--green)" id="dashRevenue">&#163;--</div>
+        <div style="font-size:10px;color:var(--grey);margin-top:3px" id="dashRevenueVsTarget"></div>
+      </div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="dashCosts">&#163;--</div><div class="stat-lbl">Monthly Costs</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--gold)" id="dashProfit">&#163;--</div><div class="stat-lbl">Profit</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--blue)" id="dashWageBill">&#163;--</div><div class="stat-lbl">Wage Bill</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--purple)" id="dashWastage">&#163;--</div><div class="stat-lbl">Wastage</div></div>
+    </div>
+
+    <div id="dashInsights"></div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:600;margin-bottom:9px">Quick Actions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <button class="btn btng" style="font-size:12px" id="qaRevenue">+ Add Revenue</button>
+      <button class="btn btno" style="font-size:12px" id="qaWastage">+ Log Wastage</button>
+      <button class="btn btno" style="font-size:12px" id="qaStaff">+ Add Staff</button>
+      <button class="btn btno" style="font-size:12px" id="qaCost">+ Add Cost</button>
+    </div>
+    <button class="btn btnbl" style="background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(77,171,247,.04));border:1px solid rgba(0,230,118,.2);color:var(--green);font-size:13px;margin-bottom:20px" id="qaBrain">Ask AI Brain about my business</button>
+  </div>
+</div>
+
+<!-- OPERATIONS -->
+<div class="screen" id="s-ops">
+  <div class="sp">
+    <div class="stag">Operations</div>
+    <h2 class="stitle">Track everything.<br><em>Cut what costs you.</em></h2>
+    <div class="mtabs" id="opsTabs">
+      <div class="mtab act" data-tab="staff">Staff</div>
+      <div class="mtab" data-tab="menu">Menu</div>
+      <div class="mtab" data-tab="costs">Costs</div>
+      <div class="mtab" data-tab="revenue">Revenue</div>
+      <div class="mtab" data-tab="wastage">Wastage</div>
+    </div>
+
+    <!-- STAFF TAB -->
+    <div class="tv act" id="tv-staff">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addStaffBtn">+ Add Staff Member</button>
+      <div id="staffSummary" class="card" style="display:none;border-color:rgba(0,230,118,.15);margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:11px;color:var(--grey)">Weekly Wage Bill</div><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)" id="weeklyWages">&#163;0</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--grey)">Monthly</div><div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--red)" id="monthlyWages">&#163;0</div></div>
+        </div>
+      </div>
+      <div id="staffList"></div>
+    </div>
+
+    <!-- MENU TAB -->
+    <div class="tv" id="tv-menu">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addMenuBtn">+ Add Menu Item</button>
+      <div id="menuSummary" class="card" style="display:none;border-color:rgba(201,168,76,.15);margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between">
+          <div><div style="font-size:11px;color:var(--grey)">Best Margin</div><div style="font-size:13px;font-weight:700;color:var(--green)" id="bestMarginItem">--</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--grey)">Worst Margin</div><div style="font-size:13px;font-weight:700;color:var(--red)" id="worstMarginItem">--</div></div>
+        </div>
+      </div>
+      <div id="menuList"></div>
+    </div>
+
+    <!-- COSTS TAB -->
+    <div class="tv" id="tv-costs">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addCostBtn">+ Add Cost</button>
+      <div id="costSummary" class="card" style="display:none;border-color:rgba(255,77,109,.15);margin-bottom:12px">
+        <div style="font-size:11px;color:var(--grey);margin-bottom:4px">Total Monthly Overheads</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--red)" id="totalCosts">&#163;0</div>
+      </div>
+      <div id="costList"></div>
+    </div>
+
+    <!-- REVENUE TAB -->
+    <div class="tv" id="tv-revenue">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addRevenueBtn">+ Log Today's Revenue</button>
+      <div id="revSummary" class="card" style="display:none;border-color:rgba(0,230,118,.15);margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between">
+          <div><div style="font-size:11px;color:var(--grey)">This Month</div><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--green)" id="monthRevTotal">&#163;0</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--grey)">Daily Average</div><div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold)" id="dailyRevAvg">&#163;0</div></div>
+        </div>
+      </div>
+      <div id="revenueList"></div>
+    </div>
+
+    <!-- WASTAGE TAB -->
+    <div class="tv" id="tv-wastage">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addWastageBtn">+ Log Wastage</button>
+      <div id="wastageSummary" class="card" style="display:none;border-color:rgba(204,93,232,.15);margin-bottom:12px">
+        <div style="font-size:11px;color:var(--grey);margin-bottom:4px">Wastage This Month</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:var(--purple)" id="totalWastage">&#163;0</div>
+        <div style="font-size:11px;color:var(--grey);margin-top:4px" id="wastageNote"></div>
+      </div>
+      <div id="wastageList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MARKETING -->
+<div class="screen" id="s-mkt">
+  <div class="sp">
+    <div class="stag">Marketing</div>
+    <h2 class="stitle">Grow your<br><em>customer base.</em></h2>
+    <div class="mtabs" id="mktTabs">
+      <div class="mtab act" data-tab="campaigns">Campaigns</div>
+      <div class="mtab" data-tab="content">Content AI</div>
+      <div class="mtab" data-tab="repeat">Repeat</div>
+      <div class="mtab" data-tab="reviews">Reviews</div>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div class="tv act" id="tv-campaigns">
+      <button class="btn btng btnbl" style="margin-bottom:12px" id="addCampaignBtn">+ Launch New Campaign</button>
+      <div id="campaignList"></div>
+    </div>
+
+    <!-- CONTENT AI -->
+    <div class="tv" id="tv-content">
+      <div class="card" style="border-color:rgba(201,168,76,.15);margin-bottom:10px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:6px">AI Content Generator</div>
+        <div style="font-size:12px;color:var(--grey);margin-bottom:11px">Tell the AI what you need and it writes it for your specific venue.</div>
+        <select class="fsel" id="contentType" style="margin-bottom:8px">
+          <option value="instagram reel idea and caption">Instagram Reel idea + caption</option>
+          <option value="tiktok video concept">TikTok video concept</option>
+          <option value="google business post">Google Business post</option>
+          <option value="promotional offer post">Promotional offer post</option>
+          <option value="behind the scenes content idea">Behind the scenes idea</option>
+          <option value="email to past customers">Email to past customers</option>
+        </select>
+        <button class="btn btng btnbl" id="genContentBtn">Generate Content</button>
+      </div>
+      <div id="contentOutput"></div>
+    </div>
+
+    <!-- REPEAT ENGINE -->
+    <div class="tv" id="tv-repeat">
+      <div class="card" style="border-color:rgba(0,230,118,.2);margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:13px;font-weight:700">Repeat Engine</div><div style="font-size:11px;color:var(--grey)">Auto win-back system</div></div>
+          <label class="sw"><input type="checkbox" checked id="repeatToggle"><div class="sw-s"></div></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row" style="padding-top:0"><div style="flex:1"><div style="font-size:13px;font-weight:700">We Miss You</div><div style="font-size:11px;color:var(--grey)">Sent after 7 days no visit</div></div><label class="sw"><input type="checkbox" checked id="r1"><div class="sw-s"></div></label></div>
+        <div class="row"><div style="flex:1"><div style="font-size:13px;font-weight:700">Birthday Offer</div><div style="font-size:11px;color:var(--grey)">Free dessert before birthday</div></div><label class="sw"><input type="checkbox" checked id="r2"><div class="sw-s"></div></label></div>
+        <div class="row"><div style="flex:1"><div style="font-size:13px;font-weight:700">Review Request</div><div style="font-size:11px;color:var(--grey)">2hrs after every visit</div></div><label class="sw"><input type="checkbox" checked id="r3"><div class="sw-s"></div></label></div>
+        <div class="row" style="padding-bottom:0"><div style="flex:1"><div style="font-size:13px;font-weight:700">Weekly Promo</div><div style="font-size:11px;color:var(--grey)">Sunday night deal message</div></div><label class="sw"><input type="checkbox" id="r4"><div class="sw-s"></div></label></div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="tv" id="tv-reviews">
+      <div class="card" style="border-color:rgba(255,179,71,.2);margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px">Review Strategy</div>
+        <div style="font-size:12px;color:var(--grey);line-height:1.6;margin-bottom:11px;font-weight:300">AI writes a personalised review request you can send right now.</div>
+        <button class="btn btng btnbl" id="genReviewBtn">Generate Review Request</button>
+      </div>
+      <div id="reviewOutput"></div>
+      <div class="card">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:600;margin-bottom:10px">Review Tips From AI</div>
+        <div class="row" style="padding-top:0"><div style="width:26px;height:26px;border-radius:50%;background:var(--green-dim);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">1</div><div style="font-size:12px;color:var(--grey)">Ask at the right moment &#8212; when they say "that was lovely"</div></div>
+        <div class="row"><div style="width:26px;height:26px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">2</div><div style="font-size:12px;color:var(--grey)">Reply to every review within 24hrs, good or bad</div></div>
+        <div class="row" style="padding-bottom:0"><div style="width:26px;height:26px;border-radius:50%;background:var(--blue-dim);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">3</div><div style="font-size:12px;color:var(--grey)">Put your Google review link on your receipt</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- AI BRAIN -->
+<div class="screen" id="s-brain">
+  <div class="ai-wrap">
+    <div style="padding:12px 16px 0;flex-shrink:0">
+      <div class="stag">AI Brain</div>
+      <h2 class="stitle" style="margin-bottom:8px">Your business.<br><em>Fully analysed.</em></h2>
+      <div style="background:linear-gradient(135deg,rgba(0,230,118,.06),rgba(77,171,247,.04));border:1px solid rgba(0,230,118,.15);border-radius:12px;padding:11px;margin-bottom:6px;font-size:11px;color:var(--grey);line-height:1.7">AI reads your real data &#8212; revenue, costs, staff, margins, wastage &#8212; and tells you exactly what to do.</div>
+    </div>
+    <div class="chips" id="brainChips">
+      <button class="chip" data-q="Analyse my business data and tell me the top 3 things I should focus on right now to increase profit.">Analyse my business</button>
+      <button class="chip" data-q="Where am I losing the most money right now? Look at my costs, wastage and margins.">Where am I losing money?</button>
+      <button class="chip" data-q="Build me a 7-day action plan based on my specific business data.">Weekly action plan</button>
+      <button class="chip" data-q="Which of my menu items should I promote more and which should I cut based on margins?">Menu strategy</button>
+      <button class="chip" data-q="How do I reduce my wage bill without affecting service quality?">Reduce wage bill</button>
+      <button class="chip" data-q="How do I get more customers this week specifically for my type of venue?">Get more customers</button>
+      <button class="chip" data-q="What marketing should I be doing for my venue that I'm not doing right now?">Marketing gaps</button>
+    </div>
+    <div class="ai-msgs" id="brainMsgs">
+      <div class="msg ai"><div class="bbl">Hi! I'm your BackAIHouse AI Brain. I have access to your business data &#8212; your revenue, costs, staff wage bill, menu margins, and wastage. Ask me anything and I'll give you specific advice based on YOUR numbers, not generic tips.</div></div>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-inp" id="brainInput" placeholder="Ask me about your business..." type="text">
+      <button class="send-btn" id="brainSendBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="sp">
+    <div class="stag">Settings</div>
+    <h2 class="stitle">Your<br><em>account.</em></h2>
+    <div class="card" style="margin-bottom:10px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);font-weight:600;margin-bottom:10px">Business Profile</div>
+      <div class="row" style="padding-top:0"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Name</div><div style="font-size:13px;font-weight:600" id="setBizName">--</div></div>
+      <div class="row"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Type</div><div style="font-size:13px;font-weight:600" id="setBizType">--</div></div>
+      <div class="row"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Location</div><div style="font-size:13px;font-weight:600" id="setBizLoc">--</div></div>
+      <div class="row" style="padding-bottom:0"><div style="font-size:12px;color:var(--grey);width:80px;flex-shrink:0">Target</div><div style="font-size:13px;font-weight:600;color:var(--green)" id="setBizTarget">--</div></div>
+    </div>
+    <div class="card" style="border-color:rgba(201,168,76,.2);margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Plan</div>
+      <div style="font-size:11px;color:var(--gold);margin-bottom:11px">&#163;4.99/month &#8212; Launch offer (3 months then &#163;99/month)</div>
+      <a href="https://buy.stripe.com/8x2bJ11jy2pCdNq0wR6kg04" style="display:block;padding:10px;background:linear-gradient(135deg,#c9a84c,#e4c778);color:#000;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none;text-align:center">Manage Subscription</a>
+    </div>
+    <button class="btn btno btnbl" style="margin-bottom:20px" id="logoutBtn">Sign Out</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <div class="bnav">
+    <div class="bn active" id="bn-dash">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
+      <div class="bn-l">Dashboard</div>
+    </div>
+    <div class="bn" id="bn-ops">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="bn-l">Operations</div>
+    </div>
+    <div class="bn" id="bn-mkt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
+      <div class="bn-l">Marketing</div>
+    </div>
+    <div class="bn" id="bn-brain">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 01-4.96-.44 2.5 2.5 0 01-2.96-3.08 3 3 0 01-.34-5.58 2.5 2.5 0 013.32-3.97A2.5 2.5 0 019.5 2z"/><path d="M14.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 004.96-.44 2.5 2.5 0 002.96-3.08 3 3 0 00.34-5.58 2.5 2.5 0 00-3.32-3.97A2.5 2.5 0 0014.5 2z"/></svg>
+      <div class="bn-l">AI Brain</div>
+    </div>
+    <div class="bn" id="bn-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <div class="bn-l">Settings</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<div class="modal-bg" id="staffModal">
+  <div class="modal-box">
+    <div class="modal-title" id="staffModalTitle">Add Staff Member</div>
+    <input type="hidden" id="staffModalId">
+    <label class="fl" style="margin-top:0">Name</label>
+    <input class="fi" id="mStaffName" type="text" placeholder="e.g. Sarah">
+    <label class="fl">Role</label>
+    <select class="fsel" id="mStaffRole">
+      <option value="Chef">Chef</option>
+      <option value="Sous Chef">Sous Chef</option>
+      <option value="Waiter/Waitress">Waiter/Waitress</option>
+      <option value="Bartender">Bartender</option>
+      <option value="Kitchen Porter">Kitchen Porter</option>
+      <option value="Manager">Manager</option>
+      <option value="Barista">Barista</option>
+    </select>
+    <label class="fl">Hourly Rate (&#163;)</label>
+    <input class="fi" id="mStaffRate" type="number" placeholder="e.g. 12.50">
+    <label class="fl">Hours Per Week</label>
+    <input class="fi" id="mStaffHours" type="number" placeholder="e.g. 40">
+    <div id="mStaffWage" style="font-size:11px;color:var(--gold);margin-top:6px"></div>
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="staffModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="staffModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="menuModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Menu Item</div>
+    <input type="hidden" id="menuModalId">
+    <label class="fl" style="margin-top:0">Dish Name</label>
+    <input class="fi" id="mMenuName" type="text" placeholder="e.g. Grilled Salmon">
+    <label class="fl">Category</label>
+    <select class="fsel" id="mMenuCat">
+      <option value="Starter">Starter</option>
+      <option value="Main">Main</option>
+      <option value="Dessert">Dessert</option>
+      <option value="Drink">Drink</option>
+      <option value="Special">Special</option>
+    </select>
+    <label class="fl">Selling Price (&#163;)</label>
+    <input class="fi" id="mMenuPrice" type="number" step="0.01" placeholder="e.g. 18.00">
+    <label class="fl">Ingredient Cost (&#163;)</label>
+    <input class="fi" id="mMenuCost" type="number" step="0.01" placeholder="e.g. 5.50">
+    <div id="mMenuMargin" style="font-size:11px;color:var(--gold);margin-top:6px"></div>
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="menuModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="menuModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="costModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Cost</div>
+    <input type="hidden" id="costModalId">
+    <label class="fl" style="margin-top:0">Cost Name</label>
+    <input class="fi" id="mCostName" type="text" placeholder="e.g. Rent">
+    <label class="fl">Category</label>
+    <select class="fsel" id="mCostCat">
+      <option value="rent">Rent / Rates</option>
+      <option value="utilities">Utilities</option>
+      <option value="supplies">Supplies</option>
+      <option value="delivery_fees">Delivery App Fees</option>
+      <option value="marketing">Marketing / Ads</option>
+      <option value="insurance">Insurance</option>
+      <option value="other">Other</option>
+    </select>
+    <label class="fl">Amount (&#163;)</label>
+    <input class="fi" id="mCostAmount" type="number" placeholder="e.g. 3500">
+    <label class="fl">Frequency</label>
+    <select class="fsel" id="mCostFreq">
+      <option value="monthly">Monthly</option>
+      <option value="weekly">Weekly</option>
+    </select>
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="costModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="costModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="revenueModal">
+  <div class="modal-box">
+    <div class="modal-title">Log Revenue</div>
+    <input type="hidden" id="revenueModalId">
+    <label class="fl" style="margin-top:0">Date</label>
+    <input class="fi" id="mRevDate" type="date">
+    <label class="fl">Total Takings (&#163;)</label>
+    <input class="fi" id="mRevAmount" type="number" step="0.01" placeholder="e.g. 1240">
+    <label class="fl">Covers / Customers</label>
+    <input class="fi" id="mRevCovers" type="number" placeholder="e.g. 85">
+    <label class="fl">Notes (optional)</label>
+    <input class="fi" id="mRevNotes" type="text" placeholder="e.g. Quiet Monday">
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="revModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="revModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="wastageModal">
+  <div class="modal-box">
+    <div class="modal-title">Log Wastage</div>
+    <input type="hidden" id="wastageModalId">
+    <label class="fl" style="margin-top:0">Item Wasted</label>
+    <input class="fi" id="mWasteName" type="text" placeholder="e.g. Salmon fillet">
+    <label class="fl">Date</label>
+    <input class="fi" id="mWasteDate" type="date">
+    <label class="fl">Cost of Waste (&#163;)</label>
+    <input class="fi" id="mWasteCost" type="number" step="0.01" placeholder="e.g. 45.00">
+    <label class="fl">Reason</label>
+    <select class="fsel" id="mWasteReason">
+      <option value="Overordered">Overordered</option>
+      <option value="Expired">Expired / gone off</option>
+      <option value="Prep waste">Prep waste</option>
+      <option value="Cancelled order">Cancelled order</option>
+      <option value="Other">Other</option>
+    </select>
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="wastageModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="wastageModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="campaignModal">
+  <div class="modal-box">
+    <div class="modal-title">Launch Campaign</div>
+    <label class="fl" style="margin-top:0">Campaign Name</label>
+    <input class="fi" id="mCampName" type="text" placeholder="e.g. January Offer">
+    <label class="fl">Offer</label>
+    <input class="fi" id="mCampOffer" type="text" placeholder="e.g. 10% off your first visit">
+    <label class="fl">Platform</label>
+    <select class="fsel" id="mCampPlatform">
+      <option value="Facebook + Instagram">Facebook + Instagram</option>
+      <option value="Instagram">Instagram only</option>
+      <option value="Facebook">Facebook only</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Google Ads">Google Ads</option>
+    </select>
+    <label class="fl">Daily Budget (&#163;)</label>
+    <input class="fi" id="mCampBudget" type="number" placeholder="e.g. 10">
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="btn btno" id="campaignModalClose">Cancel</button>
+      <button class="btn btng" style="flex:1" id="campaignModalSave">Save &amp; Launch</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var BIZ_ID = null;
+var BIZ = {};
+var ACCESS_CODES = ['BACKAIHOUSE', 'BAH2024', 'LAUNCH499'];
+
+// -- DB --
+async function db(table, method, data, match, select) {
+  try {
+    var r = await fetch('/api/db', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({table: table, method: method, data: data, match: match, select: select})
+    });
+    return await r.json();
+  } catch(e) {
+    console.error('DB error:', e);
+    return [];
+  }
+}
+
+// -- TOAST --
+function toast(msg, color) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || 'var(--green)';
+  t.style.color = color ? '#fff' : '#000';
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// -- NAV --
+var SCREENS = ['dash','ops','mkt','brain','settings'];
+function go(id) {
+  SCREENS.forEach(function(s) {
+    document.getElementById('s-' + s).classList.toggle('active', s === id);
+    document.getElementById('bn-' + s).classList.toggle('active', s === id);
+  });
+  var sc = document.getElementById('s-' + id);
+  if (sc) sc.scrollTop = 0;
+  if (id === 'dash') loadDashboard();
+  if (id === 'ops') loadOpsData();
+  if (id === 'mkt') loadCampaigns();
+}
+
+SCREENS.forEach(function(s) {
+  document.getElementById('bn-' + s).addEventListener('click', function() { go(s); });
+});
+
+// -- LOGIN --
+document.getElementById('enterBtn').addEventListener('click', function() {
+  var code = document.getElementById('accessCode').value.trim().toUpperCase();
+  var err = document.getElementById('loginErr');
+  if (!code) { err.style.display = 'block'; err.textContent = 'Please enter your access code.'; return; }
+  if (ACCESS_CODES.indexOf(code) === -1) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'none';
+  loadOrOnboard(code);
+});
+
+async function loadOrOnboard(code) {
+  var result = await db('businesses', 'select', null, {access_code: code});
+  if (result && result.length > 0) {
+    BIZ_ID = result[0].id;
+    BIZ = result[0];
+    startApp();
+  } else {
+    BIZ = {access_code: code};
+    document.getElementById('onboardScreen').style.display = 'block';
+  }
+}
+
+// -- ONBOARDING --
+function showObStep(n) {
+  document.getElementById('ob1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('ob2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('ob3').style.display = n === 3 ? 'block' : 'none';
+  document.getElementById('obStep').textContent = String(n);
+  var titles = ['Tell me about your business', 'Revenue and goals', 'Challenges and costs'];
+  document.getElementById('obTitle').textContent = titles[n-1];
+}
+
+document.getElementById('ob1next').addEventListener('click', function() {
+  var name = document.getElementById('obName').value;
+  var type = document.getElementById('obType').value;
+  if (!name || !type) { toast('Please fill in all fields', '#ff4d6d'); return; }
+  BIZ.name = name;
+  BIZ.type = type;
+  BIZ.location = document.getElementById('obLocation').value;
+  BIZ.covers_per_day = parseInt(document.getElementById('obCovers').value) || 0;
+  showObStep(2);
+});
+
+document.getElementById('ob2back').addEventListener('click', function() { showObStep(1); });
+document.getElementById('ob2next').addEventListener('click', function() {
+  BIZ.monthly_revenue = parseFloat(document.getElementById('obRevenue').value) || 0;
+  BIZ.target_revenue = parseFloat(document.getElementById('obTarget').value) || 0;
+  BIZ.runs_ads = document.getElementById('obAds').value === 'yes';
+  BIZ.on_delivery_apps = document.getElementById('obDelivery').value === 'yes';
+  showObStep(3);
+});
+
+document.getElementById('ob3back').addEventListener('click', function() { showObStep(2); });
+document.getElementById('ob3save').addEventListener('click', async function() {
+  var btn = document.getElementById('ob3save');
+  btn.textContent = 'Building your dashboard...';
+  btn.disabled = true;
+  BIZ.biggest_challenge = document.getElementById('obChallenge').value;
+  BIZ.goal = document.getElementById('obGoal').value;
+
+  var result = await db('businesses', 'insert', BIZ);
+  if (result && result.length > 0) {
+    BIZ_ID = result[0].id;
+    BIZ = result[0];
+    // Add initial rent as a cost if provided
+    var rent = parseFloat(document.getElementById('obRent').value);
+    if (rent > 0) {
+      await db('costs', 'insert', {business_id: BIZ_ID, name: 'Rent / Rates', amount: rent, frequency: 'monthly', category: 'rent'});
+    }
+    document.getElementById('onboardScreen').style.display = 'none';
+    startApp();
+    toast('Welcome to BackAIHouse, ' + BIZ.name + '!');
+  } else {
+    toast('Error saving. Please try again.', '#ff4d6d');
+    btn.textContent = 'Build My Dashboard';
+    btn.disabled = false;
+  }
+});
+
+function startApp() {
+  document.getElementById('app').style.display = 'flex';
+  var initials = BIZ.name ? BIZ.name.charAt(0).toUpperCase() : 'B';
+  document.getElementById('topAvatar').textContent = initials;
+  document.getElementById('bizName').textContent = BIZ.name || 'BackAIHouse';
+  document.getElementById('setBizName').textContent = BIZ.name || '--';
+  document.getElementById('setBizType').textContent = BIZ.type || '--';
+  document.getElementById('setBizLoc').textContent = BIZ.location || '--';
+  document.getElementById('setBizTarget').textContent = BIZ.target_revenue ? '\u00a3' + Number(BIZ.target_revenue).toLocaleString() + '/month' : '--';
+  loadDashboard();
+}
+
+// -- DASHBOARD --
+async function loadDashboard() {
+  if (!BIZ_ID) return;
+  document.getElementById('dashTitle').innerHTML = (BIZ.name || 'Your business') + '.<br><em>Right now.</em>';
+
+  var now = new Date();
+  var monthStart = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+
+  var revenues = await db('revenue_entries', 'select', null, {business_id: BIZ_ID});
+  var costs = await db('costs', 'select', null, {business_id: BIZ_ID});
+  var staff = await db('staff', 'select', null, {business_id: BIZ_ID});
+  var wastage = await db('wastage_entries', 'select', null, {business_id: BIZ_ID});
+
+  var monthRevenue = 0;
+  if (revenues && revenues.length > 0) {
+    revenues.forEach(function(r) {
+      if (r.date >= monthStart) monthRevenue += parseFloat(r.amount) || 0;
+    });
+  }
+
+  var monthlyCosts = 0;
+  if (costs && costs.length > 0) {
+    costs.forEach(function(c) {
+      var amt = parseFloat(c.amount) || 0;
+      monthlyCosts += c.frequency === 'weekly' ? amt * 4.33 : amt;
+    });
+  }
+
+  var weeklyWages = 0;
+  if (staff && staff.length > 0) {
+    staff.forEach(function(s) {
+      weeklyWages += (parseFloat(s.hourly_rate) || 0) * (parseFloat(s.hours_per_week) || 0);
+    });
+  }
+  var monthlyWages = weeklyWages * 4.33;
+
+  var monthWastage = 0;
+  if (wastage && wastage.length > 0) {
+    wastage.forEach(function(w) {
+      if (w.date >= monthStart) monthWastage += parseFloat(w.cost) || 0;
+    });
+  }
+
+  var totalCosts = monthlyCosts + monthlyWages;
+  var profit = monthRevenue - totalCosts - monthWastage;
+
+  document.getElementById('dashRevenue').textContent = '\u00a3' + Math.round(monthRevenue).toLocaleString();
+  document.getElementById('dashCosts').textContent = '\u00a3' + Math.round(totalCosts).toLocaleString();
+  document.getElementById('dashProfit').textContent = (profit >= 0 ? '\u00a3' : '-\u00a3') + Math.abs(Math.round(profit)).toLocaleString();
+  document.getElementById('dashWageBill').textContent = '\u00a3' + Math.round(monthlyWages).toLocaleString();
+  document.getElementById('dashWastage').textContent = '\u00a3' + Math.round(monthWastage).toLocaleString();
+
+  var profitEl = document.getElementById('dashProfit');
+  profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+
+  var target = parseFloat(BIZ.target_revenue) || 0;
+  if (target > 0) {
+    var pct = Math.round((monthRevenue / target) * 100);
+    document.getElementById('dashRevenueVsTarget').textContent = pct + '% of \u00a3' + target.toLocaleString() + ' target';
+    document.getElementById('topRevenue').textContent = pct + '% of target';
+  }
+
+  // AI Insights
+  var insights = [];
+  if (monthWastage > monthRevenue * 0.05) insights.push({type:'warn', text: 'Wastage is ' + Math.round((monthWastage/monthRevenue)*100) + '% of revenue. Industry target is under 5%.'});
+  if (monthlyWages > monthRevenue * 0.35) insights.push({type:'warn', text: 'Wage bill is ' + Math.round((monthlyWages/monthRevenue)*100) + '% of revenue. Target is under 30%.'});
+  if (profit < 0) insights.push({type:'urgent', text: 'You are currently running at a loss of \u00a3' + Math.abs(Math.round(profit)).toLocaleString() + ' this month.'});
+  if (monthRevenue === 0) insights.push({type:'info', text: 'Log your daily revenue in Operations to see your real profit.'});
+
+  var insEl = document.getElementById('dashInsights');
+  insEl.innerHTML = '';
+  insights.forEach(function(ins) {
+    var colors = {urgent: ['var(--red-dim)','rgba(255,77,109,.2)','var(--red)'], warn: ['var(--gold-dim)','rgba(201,168,76,.2)','var(--gold)'], info: ['var(--blue-dim)','rgba(77,171,247,.2)','var(--blue)']};
+    var c = colors[ins.type] || colors.info;
+    var div = document.createElement('div');
+    div.style.cssText = 'background:' + c[0] + ';border:1px solid ' + c[1] + ';border-radius:11px;padding:10px 12px;font-size:12px;color:' + c[2] + ';font-weight:500;margin-bottom:8px;line-height:1.5';
+    div.textContent = ins.text;
+    insEl.appendChild(div);
+  });
+}
+
+// Quick action buttons
+document.getElementById('qaRevenue').addEventListener('click', function() { go('ops'); switchOpsTab('revenue'); openRevenueModal(); });
+document.getElementById('qaWastage').addEventListener('click', function() { go('ops'); switchOpsTab('wastage'); openWastageModal(); });
+document.getElementById('qaStaff').addEventListener('click', function() { go('ops'); switchOpsTab('staff'); openStaffModal(); });
+document.getElementById('qaCost').addEventListener('click', function() { go('ops'); switchOpsTab('costs'); openCostModal(); });
+document.getElementById('qaBrain').addEventListener('click', function() { go('brain'); });
+
+// -- OPS TABS --
+function switchOpsTab(tab) {
+  document.querySelectorAll('#opsTabs .mtab').forEach(function(t) { t.classList.toggle('act', t.getAttribute('data-tab') === tab); });
+  ['staff','menu','costs','revenue','wastage'].forEach(function(t) {
+    document.getElementById('tv-' + t).classList.toggle('act', t === tab);
+  });
+}
+document.querySelectorAll('#opsTabs .mtab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    switchOpsTab(t.getAttribute('data-tab'));
+    loadOpsData();
+  });
+});
+
+// -- MKT TABS --
+function switchMktTab(tab) {
+  document.querySelectorAll('#mktTabs .mtab').forEach(function(t) { t.classList.toggle('act', t.getAttribute('data-tab') === tab); });
+  ['campaigns','content','repeat','reviews'].forEach(function(t) {
+    document.getElementById('tv-' + t).classList.toggle('act', t === tab);
+  });
+}
+document.querySelectorAll('#mktTabs .mtab').forEach(function(t) {
+  t.addEventListener('click', function() { switchMktTab(t.getAttribute('data-tab')); });
+});
+
+// -- LOAD OPS DATA --
+async function loadOpsData() {
+  if (!BIZ_ID) return;
+  loadStaff();
+  loadMenu();
+  loadCosts();
+  loadRevenue();
+  loadWastage();
+}
+
+function makeDeleteBtn(fn) {
+  var btn = document.createElement('button');
+  btn.className = 'btn btnr btnsm';
+  btn.textContent = 'Del';
+  btn.addEventListener('click', fn);
+  return btn;
+}
+
+// STAFF
+async function loadStaff() {
+  var data = await db('staff', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('staffList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No staff added yet. Tap + to add your first team member.</div>';
+    document.getElementById('staffSummary').style.display = 'none';
+    return;
+  }
+  var totalWeekly = 0;
+  data.forEach(function(s) {
+    var weekly = (parseFloat(s.hourly_rate) || 0) * (parseFloat(s.hours_per_week) || 0);
+    totalWeekly += weekly;
+    var row = document.createElement('div');
+    row.className = 'card';
+    row.style.marginBottom = '8px';
+    row.innerHTML = '<div style="display:flex;align-items:center;gap:10px"><div style="width:38px;height:38px;border-radius:50%;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:Playfair Display,serif;font-size:15px;font-weight:600;color:var(--gold);flex-shrink:0">' + s.name.charAt(0).toUpperCase() + '</div><div style="flex:1"><div style="font-size:13px;font-weight:700">' + s.name + '</div><div style="font-size:11px;color:var(--grey)">' + s.role + ' &bull; \u00a3' + s.hourly_rate + '/hr &bull; ' + s.hours_per_week + 'hrs/wk</div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--gold)">\u00a3' + Math.round(weekly) + '</div><div style="font-size:9px;color:var(--grey)">weekly</div></div></div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('staff', 'delete', null, {id: s.id});
+      loadStaff();
+      toast('Staff member removed');
+    });
+    delBtn.style.marginTop = '8px';
+    row.appendChild(delBtn);
+    list.appendChild(row);
+  });
+  document.getElementById('weeklyWages').textContent = '\u00a3' + Math.round(totalWeekly).toLocaleString();
+  document.getElementById('monthlyWages').textContent = '\u00a3' + Math.round(totalWeekly * 4.33).toLocaleString();
+  document.getElementById('staffSummary').style.display = 'block';
+}
+
+// MENU
+async function loadMenu() {
+  var data = await db('menu_items', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('menuList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No menu items added. Add dishes to track your margins.</div>';
+    document.getElementById('menuSummary').style.display = 'none';
+    return;
+  }
+  var best = null, worst = null;
+  data.forEach(function(item) {
+    var margin = item.selling_price > 0 ? Math.round(((item.selling_price - item.ingredient_cost) / item.selling_price) * 100) : 0;
+    if (!best || margin > best.margin) best = {name: item.name, margin: margin};
+    if (!worst || margin < worst.margin) worst = {name: item.name, margin: margin};
+    var col = margin >= 70 ? 'var(--green)' : margin >= 50 ? 'var(--gold)' : 'var(--red)';
+    var row = document.createElement('div');
+    row.className = 'card';
+    row.style.marginBottom = '8px';
+    row.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div><div style="font-size:13px;font-weight:700">' + item.name + '</div><div style="font-size:11px;color:var(--grey)">' + item.category + ' &bull; Cost: \u00a3' + item.ingredient_cost + '</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:700;color:' + col + '">' + margin + '%</div><div style="font-size:9px;color:var(--grey)">margin</div></div></div><div style="background:rgba(255,255,255,.05);border-radius:100px;height:4px;overflow:hidden"><div style="width:' + margin + '%;height:100%;background:' + col + ';border-radius:100px"></div></div><div style="font-size:11px;color:var(--grey);margin-top:5px">Sell: \u00a3' + item.selling_price + ' &bull; Profit per cover: \u00a3' + (item.selling_price - item.ingredient_cost).toFixed(2) + '</div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('menu_items', 'delete', null, {id: item.id});
+      loadMenu();
+      toast('Item removed');
+    });
+    delBtn.style.marginTop = '8px';
+    row.appendChild(delBtn);
+    list.appendChild(row);
+  });
+  if (best) document.getElementById('bestMarginItem').textContent = best.name + ' (' + best.margin + '%)';
+  if (worst) document.getElementById('worstMarginItem').textContent = worst.name + ' (' + worst.margin + '%)';
+  document.getElementById('menuSummary').style.display = 'block';
+}
+
+// COSTS
+async function loadCosts() {
+  var data = await db('costs', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('costList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No costs added. Track your overheads to see real profit.</div>';
+    document.getElementById('costSummary').style.display = 'none';
+    return;
+  }
+  var total = 0;
+  var catColors = {rent:'var(--red)',utilities:'var(--blue)',supplies:'var(--gold)',delivery_fees:'var(--purple)',marketing:'var(--green)',insurance:'var(--amber)',other:'var(--grey)'};
+  data.forEach(function(c) {
+    var monthly = c.frequency === 'weekly' ? c.amount * 4.33 : c.amount;
+    total += monthly;
+    var col = catColors[c.category] || 'var(--grey)';
+    var row = document.createElement('div');
+    row.className = 'card';
+    row.style.marginBottom = '8px';
+    row.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:' + col + ';flex-shrink:0"></div><div><div style="font-size:13px;font-weight:700">' + c.name + '</div><div style="font-size:11px;color:var(--grey)">' + c.category + ' &bull; ' + c.frequency + '</div></div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--red)">\u00a3' + Math.round(monthly) + '</div><div style="font-size:9px;color:var(--grey)">per month</div></div></div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('costs', 'delete', null, {id: c.id});
+      loadCosts();
+      toast('Cost removed');
+    });
+    delBtn.style.marginTop = '8px';
+    row.appendChild(delBtn);
+    list.appendChild(row);
+  });
+  document.getElementById('totalCosts').textContent = '\u00a3' + Math.round(total).toLocaleString();
+  document.getElementById('costSummary').style.display = 'block';
+}
+
+// REVENUE
+async function loadRevenue() {
+  var data = await db('revenue_entries', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('revenueList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No revenue logged yet. Add daily takings to track your real income.</div>';
+    document.getElementById('revSummary').style.display = 'none';
+    return;
+  }
+  var now = new Date();
+  var monthStart = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+  var monthTotal = 0;
+  var monthDays = 0;
+  var sorted = data.sort(function(a,b) { return b.date.localeCompare(a.date); });
+  sorted.forEach(function(r) {
+    if (r.date >= monthStart) { monthTotal += parseFloat(r.amount) || 0; monthDays++; }
+    var row = document.createElement('div');
+    row.className = 'card';
+    row.style.marginBottom = '8px';
+    row.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">' + r.date + '</div><div style="font-size:11px;color:var(--grey)">' + (r.covers || '--') + ' covers' + (r.notes ? ' &bull; ' + r.notes : '') + '</div></div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:var(--green)">\u00a3' + parseFloat(r.amount).toLocaleString() + '</div></div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('revenue_entries', 'delete', null, {id: r.id});
+      loadRevenue();
+      toast('Entry removed');
+    });
+    delBtn.style.marginTop = '8px';
+    row.appendChild(delBtn);
+    list.appendChild(row);
+  });
+  document.getElementById('monthRevTotal').textContent = '\u00a3' + Math.round(monthTotal).toLocaleString();
+  document.getElementById('dailyRevAvg').textContent = monthDays > 0 ? '\u00a3' + Math.round(monthTotal / monthDays).toLocaleString() : '\u00a30';
+  document.getElementById('revSummary').style.display = 'block';
+}
+
+// WASTAGE
+async function loadWastage() {
+  var data = await db('wastage_entries', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('wastageList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No wastage logged. Track waste to see where money is being thrown away.</div>';
+    document.getElementById('wastageSummary').style.display = 'none';
+    return;
+  }
+  var now = new Date();
+  var monthStart = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+  var monthTotal = 0;
+  var sorted = data.sort(function(a,b) { return b.date.localeCompare(a.date); });
+  sorted.forEach(function(w) {
+    if (w.date >= monthStart) monthTotal += parseFloat(w.cost) || 0;
+    var row = document.createElement('div');
+    row.className = 'card';
+    row.style.marginBottom = '8px';
+    row.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">' + w.item + '</div><div style="font-size:11px;color:var(--grey)">' + w.date + ' &bull; ' + w.reason + '</div></div><div style="font-family:Playfair Display,serif;font-size:16px;font-weight:600;color:var(--purple)">\u00a3' + parseFloat(w.cost).toFixed(2) + '</div></div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('wastage_entries', 'delete', null, {id: w.id});
+      loadWastage();
+      toast('Entry removed');
+    });
+    delBtn.style.marginTop = '8px';
+    row.appendChild(delBtn);
+    list.appendChild(row);
+  });
+  document.getElementById('totalWastage').textContent = '\u00a3' + monthTotal.toFixed(2);
+  document.getElementById('wastageNote').textContent = 'Logged this month. Industry target: under 3% of revenue.';
+  document.getElementById('wastageSummary').style.display = 'block';
+}
+
+// -- MODALS --
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Staff modal
+function openStaffModal(data) {
+  document.getElementById('staffModalId').value = data ? data.id : '';
+  document.getElementById('staffModalTitle').textContent = data ? 'Edit Staff Member' : 'Add Staff Member';
+  document.getElementById('mStaffName').value = data ? data.name : '';
+  document.getElementById('mStaffRate').value = data ? data.hourly_rate : '';
+  document.getElementById('mStaffHours').value = data ? data.hours_per_week : '';
+  openModal('staffModal');
+}
+document.getElementById('addStaffBtn').addEventListener('click', function() { openStaffModal(); });
+document.getElementById('staffModalClose').addEventListener('click', function() { closeModal('staffModal'); });
+document.getElementById('mStaffRate').addEventListener('input', updateWageCalc);
+document.getElementById('mStaffHours').addEventListener('input', updateWageCalc);
+function updateWageCalc() {
+  var r = parseFloat(document.getElementById('mStaffRate').value) || 0;
+  var h = parseFloat(document.getElementById('mStaffHours').value) || 0;
+  if (r && h) document.getElementById('mStaffWage').textContent = '\u00a3' + Math.round(r*h) + '/week = \u00a3' + Math.round(r*h*4.33) + '/month';
+}
+document.getElementById('staffModalSave').addEventListener('click', async function() {
+  var name = document.getElementById('mStaffName').value;
+  if (!name) { toast('Enter a name', '#ff4d6d'); return; }
+  var id = document.getElementById('staffModalId').value;
+  var data = {business_id: BIZ_ID, name: name, role: document.getElementById('mStaffRole').value, hourly_rate: parseFloat(document.getElementById('mStaffRate').value) || 0, hours_per_week: parseFloat(document.getElementById('mStaffHours').value) || 0};
+  if (id) { await db('staff', 'update', data, {id: id}); } else { await db('staff', 'insert', data); }
+  closeModal('staffModal');
+  loadStaff();
+  toast(name + ' saved!');
+});
+
+// Menu modal
+function openMenuModal() { document.getElementById('menuModalId').value = ''; document.getElementById('mMenuName').value = ''; document.getElementById('mMenuPrice').value = ''; document.getElementById('mMenuCost').value = ''; document.getElementById('mMenuMargin').textContent = ''; openModal('menuModal'); }
+document.getElementById('addMenuBtn').addEventListener('click', openMenuModal);
+document.getElementById('menuModalClose').addEventListener('click', function() { closeModal('menuModal'); });
+document.getElementById('mMenuPrice').addEventListener('input', updateMarginCalc);
+document.getElementById('mMenuCost').addEventListener('input', updateMarginCalc);
+function updateMarginCalc() {
+  var p = parseFloat(document.getElementById('mMenuPrice').value) || 0;
+  var c = parseFloat(document.getElementById('mMenuCost').value) || 0;
+  if (p > 0) {
+    var m = Math.round(((p-c)/p)*100);
+    document.getElementById('mMenuMargin').textContent = 'Margin: ' + m + '% | Profit per cover: \u00a3' + (p-c).toFixed(2);
+  }
+}
+document.getElementById('menuModalSave').addEventListener('click', async function() {
+  var name = document.getElementById('mMenuName').value;
+  if (!name) { toast('Enter dish name', '#ff4d6d'); return; }
+  var data = {business_id: BIZ_ID, name: name, category: document.getElementById('mMenuCat').value, selling_price: parseFloat(document.getElementById('mMenuPrice').value) || 0, ingredient_cost: parseFloat(document.getElementById('mMenuCost').value) || 0};
+  await db('menu_items', 'insert', data);
+  closeModal('menuModal');
+  loadMenu();
+  toast(name + ' added!');
+});
+
+// Cost modal
+function openCostModal() { document.getElementById('costModalId').value = ''; document.getElementById('mCostName').value = ''; document.getElementById('mCostAmount').value = ''; openModal('costModal'); }
+document.getElementById('addCostBtn').addEventListener('click', openCostModal);
+document.getElementById('costModalClose').addEventListener('click', function() { closeModal('costModal'); });
+document.getElementById('costModalSave').addEventListener('click', async function() {
+  var name = document.getElementById('mCostName').value;
+  if (!name) { toast('Enter cost name', '#ff4d6d'); return; }
+  var data = {business_id: BIZ_ID, name: name, category: document.getElementById('mCostCat').value, amount: parseFloat(document.getElementById('mCostAmount').value) || 0, frequency: document.getElementById('mCostFreq').value};
+  await db('costs', 'insert', data);
+  closeModal('costModal');
+  loadCosts();
+  toast(name + ' added!');
+});
+
+// Revenue modal
+function openRevenueModal() {
+  document.getElementById('revenueModalId').value = '';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('mRevDate').value = today;
+  document.getElementById('mRevAmount').value = '';
+  document.getElementById('mRevCovers').value = '';
+  document.getElementById('mRevNotes').value = '';
+  openModal('revenueModal');
+}
+document.getElementById('addRevenueBtn').addEventListener('click', openRevenueModal);
+document.getElementById('revModalClose').addEventListener('click', function() { closeModal('revenueModal'); });
+document.getElementById('revModalSave').addEventListener('click', async function() {
+  var amount = document.getElementById('mRevAmount').value;
+  if (!amount) { toast('Enter revenue amount', '#ff4d6d'); return; }
+  var data = {business_id: BIZ_ID, date: document.getElementById('mRevDate').value, amount: parseFloat(amount), covers: parseInt(document.getElementById('mRevCovers').value) || null, notes: document.getElementById('mRevNotes').value};
+  await db('revenue_entries', 'insert', data);
+  closeModal('revenueModal');
+  loadRevenue();
+  loadDashboard();
+  toast('Revenue logged!');
+});
+
+// Wastage modal
+function openWastageModal() {
+  document.getElementById('wastageModalId').value = '';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('mWasteDate').value = today;
+  document.getElementById('mWasteName').value = '';
+  document.getElementById('mWasteCost').value = '';
+  openModal('wastageModal');
+}
+document.getElementById('addWastageBtn').addEventListener('click', openWastageModal);
+document.getElementById('wastageModalClose').addEventListener('click', function() { closeModal('wastageModal'); });
+document.getElementById('wastageModalSave').addEventListener('click', async function() {
+  var item = document.getElementById('mWasteName').value;
+  if (!item) { toast('Enter item name', '#ff4d6d'); return; }
+  var data = {business_id: BIZ_ID, item: item, date: document.getElementById('mWasteDate').value, cost: parseFloat(document.getElementById('mWasteCost').value) || 0, reason: document.getElementById('mWasteReason').value};
+  await db('wastage_entries', 'insert', data);
+  closeModal('wastageModal');
+  loadWastage();
+  loadDashboard();
+  toast('Wastage logged!');
+});
+
+// Campaign modal
+document.getElementById('addCampaignBtn').addEventListener('click', function() { document.getElementById('mCampName').value = ''; document.getElementById('mCampOffer').value = ''; document.getElementById('mCampBudget').value = ''; openModal('campaignModal'); });
+document.getElementById('campaignModalClose').addEventListener('click', function() { closeModal('campaignModal'); });
+document.getElementById('campaignModalSave').addEventListener('click', async function() {
+  var name = document.getElementById('mCampName').value;
+  if (!name) { toast('Enter campaign name', '#ff4d6d'); return; }
+  var data = {business_id: BIZ_ID, name: name, offer: document.getElementById('mCampOffer').value, platform: document.getElementById('mCampPlatform').value, budget_daily: parseFloat(document.getElementById('mCampBudget').value) || 0, status: 'live'};
+  await db('campaigns', 'insert', data);
+  closeModal('campaignModal');
+  loadCampaigns();
+  toast(name + ' launched!');
+});
+
+async function loadCampaigns() {
+  if (!BIZ_ID) return;
+  var data = await db('campaigns', 'select', null, {business_id: BIZ_ID});
+  var list = document.getElementById('campaignList');
+  list.innerHTML = '';
+  if (!data || data.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey);font-size:12px">No campaigns yet. Launch your first one to start getting customers.</div>';
+    return;
+  }
+  data.forEach(function(c) {
+    var col = c.status === 'live' ? 'var(--green)' : 'var(--gold)';
+    var div = document.createElement('div');
+    div.className = 'card';
+    div.style.marginBottom = '9px';
+    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px"><div><div style="font-size:13px;font-weight:700">' + c.name + '</div><div style="font-size:11px;color:var(--grey)">' + c.platform + ' &bull; \u00a3' + c.budget_daily + '/day</div></div><div style="font-size:10px;font-weight:700;color:' + col + ';text-transform:uppercase">' + c.status + '</div></div><div style="font-size:12px;color:var(--grey);margin-bottom:8px">' + (c.offer || '') + '</div>';
+    var delBtn = makeDeleteBtn(async function() {
+      await db('campaigns', 'delete', null, {id: c.id});
+      loadCampaigns();
+      toast('Campaign removed');
+    });
+    div.appendChild(delBtn);
+    list.appendChild(div);
+  });
+}
+
+// -- MARKETING ACTIONS --
+document.getElementById('genContentBtn').addEventListener('click', async function() {
+  var btn = document.getElementById('genContentBtn');
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+  var type = document.getElementById('contentType').value;
+  var prompt = 'Write a ' + type + ' for ' + (BIZ.name || 'a restaurant') + ', a ' + (BIZ.type || 'restaurant') + ' in ' + (BIZ.location || 'the UK') + '. Make it specific, engaging, and ready to use. Include any relevant hashtags. Keep it punchy and authentic.';
+  var reply = await callAI(prompt, 'You are a social media expert for hospitality businesses. Write ready-to-use content that sounds authentic, not corporate. Always include a call to action.');
+  var output = document.getElementById('contentOutput');
+  output.innerHTML = '<div class="card" style="border-color:rgba(201,168,76,.15)"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:8px">' + type + '</div><div style="font-size:13px;line-height:1.7;color:var(--white);white-space:pre-wrap" id="contentText">' + reply + '</div><button class="btn btng btnsm" style="margin-top:10px" id="copyContent">Copy</button></div>';
+  document.getElementById('copyContent').addEventListener('click', function() {
+    navigator.clipboard.writeText(document.getElementById('contentText').textContent).then(function() { toast('Copied!'); }).catch(function() { toast('Select and copy manually'); });
+  });
+  btn.textContent = 'Generate Content';
+  btn.disabled = false;
+});
+
+document.getElementById('genReviewBtn').addEventListener('click', async function() {
+  var btn = document.getElementById('genReviewBtn');
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+  var prompt = 'Write a friendly, short review request message for ' + (BIZ.name || 'our restaurant') + '. It should feel personal, not automated. Ask them to leave a Google review. Include a line about how much it means to a small business. Under 80 words.';
+  var reply = await callAI(prompt, 'You write warm, genuine messages for hospitality businesses.');
+  var output = document.getElementById('reviewOutput');
+  output.innerHTML = '<div class="card" style="border-color:rgba(0,230,118,.15);margin-bottom:10px"><div style="font-size:13px;line-height:1.7;white-space:pre-wrap" id="reviewText">' + reply + '</div><button class="btn btng btnsm" style="margin-top:10px" id="copyReview">Copy Message</button></div>';
+  document.getElementById('copyReview').addEventListener('click', function() {
+    navigator.clipboard.writeText(document.getElementById('reviewText').textContent).then(function() { toast('Copied!'); }).catch(function() { toast('Select and copy manually'); });
+  });
+  btn.textContent = 'Generate Review Request';
+  btn.disabled = false;
+});
+
+['r1','r2','r3','r4','repeatToggle'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('change', function() { toast(this.checked ? 'Automation on' : 'Automation off'); });
+});
+
+// -- AI BRAIN --
+var brainHistory = [];
+
+async function callAI(userMsg, systemOverride) {
+  var system = systemOverride || buildBrainSystem();
+  try {
+    var r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: system, messages: [{role: 'user', content: userMsg}]})
+    });
+    if (!r.ok) return 'Error ' + r.status + '. Check Vercel environment variables.';
+    var d = await r.json();
+    return (d.content && d.content[0]) ? d.content[0].text : 'Something went wrong.';
+  } catch(e) {
+    return 'Connection error: ' + e.message;
+  }
+}
+
+function buildBrainSystem() {
+  var ctx = 'Business: ' + (BIZ.name || 'Unknown') + '. Type: ' + (BIZ.type || 'restaurant') + '. Location: ' + (BIZ.location || 'UK') + '. Covers/day: ' + (BIZ.covers_per_day || 'unknown') + '. Monthly revenue: \u00a3' + (BIZ.monthly_revenue || 0) + '. Target: \u00a3' + (BIZ.target_revenue || 0) + '. Runs ads: ' + (BIZ.runs_ads ? 'yes' : 'no') + '. On delivery apps: ' + (BIZ.on_delivery_apps ? 'yes' : 'no') + '. Biggest challenge: ' + (BIZ.biggest_challenge || 'unknown') + '.';
+  return 'You are the BackAIHouse AI Brain, a specialist hospitality business consultant. You have full context about this specific business: ' + ctx + ' Give direct, specific, numbered advice based on THEIR data. No generic tips. Always end with one action they can take TODAY. Keep responses under 200 words.';
+}
+
+async function brainSend(msg) {
+  if (!msg.trim()) return;
+  var msgs = document.getElementById('brainMsgs');
+  var userDiv = document.createElement('div');
+  userDiv.className = 'msg user';
+  userDiv.innerHTML = '<div class="bbl">' + msg + '</div>';
+  msgs.appendChild(userDiv);
+  brainHistory.push({role: 'user', content: msg});
+  document.getElementById('brainInput').value = '';
+  document.getElementById('brainSendBtn').disabled = true;
+
+  var typDiv = document.createElement('div');
+  typDiv.className = 'msg ai';
+  typDiv.id = 'brainTyping';
+  typDiv.innerHTML = '<div class="bbl"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+  msgs.appendChild(typDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    var history = brainHistory.slice(-10);
+    var r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: buildBrainSystem(), messages: history})
+    });
+    var t = document.getElementById('brainTyping');
+    if (t) t.remove();
+    if (!r.ok) {
+      var ed = await r.json().catch(function(){return {};});
+      var errDiv = document.createElement('div');
+      errDiv.className = 'msg ai';
+      errDiv.innerHTML = '<div class="bbl" style="color:var(--red)">Error ' + r.status + ': ' + (ed.error || 'Check Vercel env vars') + '</div>';
+      msgs.appendChild(errDiv);
+    } else {
+      var d = await r.json();
+      var reply = (d.content && d.content[0]) ? d.content[0].text : 'Something went wrong.';
+      brainHistory.push({role: 'assistant', content: reply});
+      var aiDiv = document.createElement('div');
+      aiDiv.className = 'msg ai';
+      aiDiv.innerHTML = '<div class="bbl">' + reply + '</div>';
+      msgs.appendChild(aiDiv);
+    }
+  } catch(e) {
+    var t2 = document.getElementById('brainTyping');
+    if (t2) t2.remove();
+    var errDiv2 = document.createElement('div');
+    errDiv2.className = 'msg ai';
+    errDiv2.innerHTML = '<div class="bbl" style="color:var(--red)">Connection failed: ' + e.message + '</div>';
+    msgs.appendChild(errDiv2);
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('brainSendBtn').disabled = false;
+}
+
+document.getElementById('brainSendBtn').addEventListener('click', function() { brainSend(document.getElementById('brainInput').value); });
+document.getElementById('brainInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); brainSend(this.value); } });
+document.querySelectorAll('#brainChips .chip').forEach(function(c) {
+  c.addEventListener('click', function() { brainSend(c.getAttribute('data-q')); });
+});
+
+// -- LOGOUT --
+document.getElementById('logoutBtn').addEventListener('click', function() {
+  BIZ_ID = null;
+  BIZ = {};
+  brainHistory = [];
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('accessCode').value = '';
+});
+
+// Close modals on bg tap
+['staffModal','menuModal','costModal','revenueModal','wastageModal','campaignModal'].forEach(function(id) {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModal(id);
+  });
+});
+</script>
+
+</body>
+</html>
